@@ -45,7 +45,7 @@ class SubscriptionPlanController extends Controller
         $request->validate([
             'level' => 'required|string|max:30|unique:subscription_plans',
             'price' => 'required|max:11',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'description' => "max:255"
         ]);
         
@@ -113,7 +113,7 @@ class SubscriptionPlanController extends Controller
         $request->validate([
             'level' => 'required|string|max:30',
             'price' => 'required|max:11',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'image' => 'required',
             'description' => "max:255"
         ]);
 
