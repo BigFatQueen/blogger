@@ -12,17 +12,17 @@
         </tr>
     </thead>
     <tbody>
-        @if (count($users))
-        @foreach($users as $key => $row)
+        @if (count($members))
+        @foreach($members as $key => $row)
             <tr>
-                <td>{{$key + $users->firstItem()}}</td>
+                <td>{{$key + $members->firstItem()}}</td>
                 <td>{{ $row->name }} &nbsp; @if(Cache::has('active-' . $row->id)) <span class="badge badge-dot mr-4"><i class="bg-success"></i> @endif</td> 
                 <td>{{ $row->email }}</td>                  
                 <td><span class="badge badge-primary">{{$row->role->name}}</span></td>     
                 @php $newDateTime = date('d-m-Y h:i A', strtotime($row->last_seen)); @endphp  
                 <td>
-                    @if(isset($row->roles))
-                        @foreach($row->permissions as $permission)
+                    @if(isset($row->role->permissions))
+                        @foreach($row->role->permissions as $permission)
                             <span class="badge badge-primary">{{$permission->name}}</span>
                         @endforeach
                     @else
@@ -35,15 +35,15 @@
                 </td>       
                 <td>@if(isset($row->last_seen)) {{ $newDateTime }} @else New User @endif</td>       
                 <td>
-                    <a href="{{route('admin.user.edit',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-primary btn-sm">Edit</a>
-                    <a href="{{route('admin.user.show',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-success btn-sm">Show</a>
-                    <form  method="post" action="{{route('admin.user.inactive', \App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
+                    <a href="{{route('admin.member.edit',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-primary btn-sm">Edit</a>
+                    <a href="{{route('admin.member.show',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-success btn-sm">Show</a>
+                    <form  method="post" action="{{route('admin.member.inactive', \App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                         @csrf
                         @method('POST')
                         <input type="hidden" name="status" value="{{ ($row->status == 1) ? 0 : 1 }}">
                         <input type="submit" class="btn btn-outline-warning btn-sm" value="{{ ($row->status == 1) ? 'In Active' : 'Active' }}">
                     </form>
-                    <form  method="post" action="{{route('admin.user.destroy', \App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
+                    <form  method="post" action="{{route('admin.member.destroy', \App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                         @csrf
                         @method('DELETE')
                         <input type="submit" class="btn btn-outline-danger btn-sm" value="Delete">
@@ -63,8 +63,8 @@
     <div class="row">
         <div class="col-12">
             <div class=" float-right">
-                @if($users)
-                    {{ $users->render() }}
+                @if($members)
+                    {{ $members->render() }}
                 @endif
             </div>
         </div>

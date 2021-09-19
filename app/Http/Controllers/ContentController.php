@@ -1,7 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Category;
+use App\Content;
 use App\Creator;
+use App\Helper\ContentHelper;
 use Illuminate\Http\Request;
 use App\Helper\Log;
 use App\Helper\UserHelper;
@@ -12,7 +15,8 @@ use Spatie\Permission\Models\Permission;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Cache;
-class UserController extends Controller
+
+class ContentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,24 +26,23 @@ class UserController extends Controller
     public function index(Request $request) 
     {   
         $status = null;
-        $roles = Role::all();
-        $permissions = Permission::all();
-        $users = User::where('role_id', 3)->orderBy('id', 'desc')->paginate(10);
+        $creators = Creator::all();
+        $categories = Category::all();
+        $contents = Content::orderBy('id', 'desc')->paginate(10);
         if ($request->ajax()) {
             
             $filter_arr = [];
-            $role_id = 3;
-            $permission_id = $request->permission_id;
+            $creator_id = $request->creator_id;
+            $category_id = $request->category_id;
             $keyword = $request->keyword;
 
-            $filter_arr['role_id'] = $role_id;
-            $filter_arr['permission_id'] = $permission_id;
+            $filter_arr['creator_id'] = $creator_id;
+            $filter_arr['category_id'] = $category_id;
             $filter_arr['keyword'] = $keyword;
-            
-            $users = UserHelper::search($role_id, $permission_id, $keyword);
-            return view('backend.user.table', compact('users', 'status', 'filter_arr'))->render();
+            $contents = ContentHelper::search($creator_id, $category_id, $keyword);
+            return view('backend.content.table', compact('contents', 'status', 'filter_arr'))->render();
         }else {
-            return view('backend.user.index', compact('users', 'status', 'roles', 'permissions'));
+            return view('backend.content.index', compact('contents', 'status', 'creators', 'categories'));
         }
     }
 
@@ -71,8 +74,8 @@ class UserController extends Controller
     public function show($id)
     {
         $id = \App\Helper\Crypt::crypt()->decrypt( $id );
-        $user = User::find($id);
-        return view('backend.user.show', compact('user'));
+        $content = Content::find($id);
+        return view('backend.content.show', compact('content'));
 
     }
 
@@ -86,14 +89,9 @@ class UserController extends Controller
     {
         
         $id = \App\Helper\Crypt::crypt()->decrypt( $id );
-        $user = User::where('id', $id)->first();
-        $roles = Role::orderBy('id', 'desc')->get();
-        $permissions = Permission::orderBy('id', 'desc')->get();
-        $user_permissions = [];
-        foreach ($user->permissions as $value) {
-            array_push($user_permissions, $value->name);
-        }
-        return view('backend.user.edit',compact('user' ,'roles', 'permissions', 'user_permissions'));
+        $categories = Category::all();
+        $content = Content::find($id);
+        return view('backend.content.edit',compact('content' ,'categories'));
     }
 
     /**
@@ -131,7 +129,7 @@ class UserController extends Controller
         if ($request->logout && $request->change_pwd) {
             Auth::logoutOtherDevices($user->password);
         }
-        return redirect()->route('admin.user.index')->with('status','User was successfully updated!!');
+        return redirect()->route('admin.content.index')->with('status','Content was successfully updated!!');
     }
 
     /**
@@ -143,18 +141,35 @@ class UserController extends Controller
     public function destroy($id)
     {
         $id = \App\Helper\Crypt::crypt()->decrypt($id);
-        $user = User::find($id);    
-        $user->delete();
-        return redirect()->route('admin.user.index')->with('status','User was successfully deleted!!');
+        $content = Content::find($id);    
+        $content->delete();
+        return redirect()->route('admin.content.index')->with('status','Content was successfully deleted!!');
         
     }
     
     public function inActive(Request $request, $id)
     {
         $id = \App\Helper\Crypt::crypt()->decrypt($id);
-        $user = User::find($id);
-        $user->status = $request->status;  
-        $user->save();
-        return redirect()->route('admin.user.index')->with('status','User successfully inactive!!');
+        $content = Content::find($id);
+        $content->status = $request->status;  
+        $content->save();
+        return redirect()->route('admin.content.index')->with('status','Content successfully inactive!!');
+    }
+
+    public function getcontentsUrl($name)
+    {
+        $contents = User::where([
+            ['role_id', '=', 2],
+            ['name', 'LIKE', "%$name%"],
+        ])->orderBy('id', 'desc')->paginate(10);
+        if(count($contents) > 1) {
+            $roles = Role::all();
+            $permissions = Permission::all();
+            return view('backend.content.index', compact('contents', 'roles', 'permissions'));
+        }else {
+            $user = $contents->first();
+            return view('backend.content.show', compact('user'));
+        }
+
     }
 }

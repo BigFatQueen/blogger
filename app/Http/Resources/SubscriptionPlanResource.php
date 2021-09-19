@@ -18,6 +18,8 @@ class SubscriptionPlanResource extends JsonResource
             'id' => $this->id,
             'level' => $this->level,
             'price' => $this->price,
+            'image' => $this->image,
+            'description' => $this->description,
         ];
     }
 }

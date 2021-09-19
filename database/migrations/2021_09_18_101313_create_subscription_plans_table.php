@@ -18,6 +18,8 @@ class CreateSubscriptionPlansTable extends Migration
             $table->foreignId('creator_id');
             $table->string('level', 30);
             $table->integer('price');
+            $table->string('image');
+            $table->string('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

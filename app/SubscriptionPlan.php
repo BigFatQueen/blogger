@@ -10,7 +10,7 @@ class SubscriptionPlan extends Model
     //
     use SoftDeletes;
     protected $fillable = [
-        'creator_id', 'level', 'price'
+        'creator_id', 'level', 'price', 'image', 'description'
     ];
     public function creator()
     {

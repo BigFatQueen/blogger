@@ -43,13 +43,32 @@ class SubscriptionPlanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'level' => ['required', 'string','max:30', 'unique:subscription_plans'],
-            'price' => ['required', 'max:11']
+            'level' => 'required|string|max:30|unique:subscription_plans',
+            'price' => 'required|max:11',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'description' => "max:255"
         ]);
+        
+        $creator_id = Auth::user()->userInfo->creator->id;
+        $main ="public/creators";
+        $image_folder = "$main/$creator_id/plan_images/";
+        $image_url = "creators/$creator_id/plan_images/";
+
+        if ($request->file(['image'])) {
+            $image = $request->file(['image']);
+            $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+            $image_path_url = $image_url.$image_name;
+            $image->storeAs("$image_folder", $image_name);
+        } else {
+            $image_path_url = NULL;
+        }
+
         $subscription_plan = SubscriptionPlan::create([
             'creator_id' => Auth::user()->userInfo->creator->id,
             'level' => $request->level,
-            'price' => $request->price
+            'price' => $request->price,
+            'image' => $image_path_url,
+            'description' => $request->description,
         ]);
 
         $subscription_plan = new SubscriptionPlanResource($subscription_plan);
@@ -92,13 +111,32 @@ class SubscriptionPlanController extends Controller
     public function update(Request $request, $id)
     { 
         $request->validate([
-            'level' => ['required', 'string','max:30'],
-            'price' => ['required', 'max:11']
+            'level' => 'required|string|max:30',
+            'price' => 'required|max:11',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'description' => "max:255"
         ]);
+
+        $creator_id = Auth::user()->userInfo->creator->id;
+        $main ="public/creators";
+        $image_folder = "$main/$creator_id/plan_images/";
+        $image_url = "creators/$creator_id/plan_images/";
+
+        if ($request->file(['image'])) {
+            $image = $request->file(['image']);
+            $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+            $image_path_url = $image_url.$image_name;
+            $image->storeAs("$image_folder", $image_name);
+        } else {
+            $image_path_url = $request->image;
+        }
+
         $subscription_plan = SubscriptionPlan::find($id);
         $subscription_plan->creator_id = Auth::user()->userInfo->creator->id;
         $subscription_plan->level = $request->level;
         $subscription_plan->price = $request->price;
+        $subscription_plan->image = $image_path_url;
+        $subscription_plan->description = $request->description;
         $subscription_plan->save();
 
         $subscription_plan = new SubscriptionPlanResource($subscription_plan);

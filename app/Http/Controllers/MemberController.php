@@ -12,7 +12,7 @@ use Spatie\Permission\Models\Permission;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Cache;
-class UserController extends Controller
+class MemberController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,22 +24,21 @@ class UserController extends Controller
         $status = null;
         $roles = Role::all();
         $permissions = Permission::all();
-        $users = User::where('role_id', 3)->orderBy('id', 'desc')->paginate(10);
+        $members = User::where('role_id', 2)->orderBy('id', 'desc')->paginate(10);
         if ($request->ajax()) {
             
             $filter_arr = [];
-            $role_id = 3;
+            $role_id = 2;
             $permission_id = $request->permission_id;
             $keyword = $request->keyword;
 
             $filter_arr['role_id'] = $role_id;
             $filter_arr['permission_id'] = $permission_id;
             $filter_arr['keyword'] = $keyword;
-            
-            $users = UserHelper::search($role_id, $permission_id, $keyword);
-            return view('backend.user.table', compact('users', 'status', 'filter_arr'))->render();
+            $members = UserHelper::search($role_id, $permission_id, $keyword);
+            return view('backend.member.table', compact('members', 'status', 'filter_arr'))->render();
         }else {
-            return view('backend.user.index', compact('users', 'status', 'roles', 'permissions'));
+            return view('backend.member.index', compact('members', 'status', 'roles', 'permissions'));
         }
     }
 
@@ -72,7 +71,7 @@ class UserController extends Controller
     {
         $id = \App\Helper\Crypt::crypt()->decrypt( $id );
         $user = User::find($id);
-        return view('backend.user.show', compact('user'));
+        return view('backend.member.show', compact('user'));
 
     }
 
@@ -93,7 +92,7 @@ class UserController extends Controller
         foreach ($user->permissions as $value) {
             array_push($user_permissions, $value->name);
         }
-        return view('backend.user.edit',compact('user' ,'roles', 'permissions', 'user_permissions'));
+        return view('backend.member.edit',compact('user' ,'roles', 'permissions', 'user_permissions'));
     }
 
     /**
@@ -131,7 +130,7 @@ class UserController extends Controller
         if ($request->logout && $request->change_pwd) {
             Auth::logoutOtherDevices($user->password);
         }
-        return redirect()->route('admin.user.index')->with('status','User was successfully updated!!');
+        return redirect()->route('admin.member.index')->with('status','Member was successfully updated!!');
     }
 
     /**
@@ -145,7 +144,7 @@ class UserController extends Controller
         $id = \App\Helper\Crypt::crypt()->decrypt($id);
         $user = User::find($id);    
         $user->delete();
-        return redirect()->route('admin.user.index')->with('status','User was successfully deleted!!');
+        return redirect()->route('admin.member.index')->with('status','Member was successfully deleted!!');
         
     }
     
@@ -155,6 +154,23 @@ class UserController extends Controller
         $user = User::find($id);
         $user->status = $request->status;  
         $user->save();
-        return redirect()->route('admin.user.index')->with('status','User successfully inactive!!');
+        return redirect()->route('admin.member.index')->with('status','Member successfully inactive!!');
+    }
+
+    public function getMembersUrl($name)
+    {
+        $members = User::where([
+            ['role_id', '=', 2],
+            ['name', 'LIKE', "%$name%"],
+        ])->orderBy('id', 'desc')->paginate(10);
+        if(count($members) > 1) {
+            $roles = Role::all();
+            $permissions = Permission::all();
+            return view('backend.member.index', compact('members', 'roles', 'permissions'));
+        }else {
+            $user = $members->first();
+            return view('backend.member.show', compact('user'));
+        }
+
     }
 }

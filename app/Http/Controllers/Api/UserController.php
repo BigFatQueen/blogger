@@ -39,7 +39,7 @@ class UserController extends Controller
         $request->merge([
             'status' => 1,
         ]);
-        $credentials = $request->only('email', 'password', 'role', 'status');
+        $credentials = $request->only('email', 'password', 'role_id', 'status');
         $token = null;
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
@@ -66,14 +66,6 @@ class UserController extends Controller
         $user->remember_token = $token;
         $user->save();
 
-        if($user->role == 1) {
-            $role = 'Admin';
-        }elseif ($user->role == 2) {
-            $role = 'Creator';
-        }else {
-            $role = "User";
-        }
-
         $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
         Cache::put('active-' . Auth::user()->id, true, $expiresAt);
         // last seen
@@ -84,7 +76,7 @@ class UserController extends Controller
             'data'=> [
                 'id' =>  $user->id,
                 'name' => $user->name,
-                'role' => $role,
+                'role' => $user->role->name,
                 'status' => 'Active',
                 'access_token' => $token,
                 'token_type' => 'Bearer'
@@ -99,7 +91,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:100', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone_no' => ['max:30'],
-            'role' => ['required', 'integer' , 'max:11'],
+            'role_id' => ['required', 'integer' , 'max:11'],
             'dob' => ['required']
         ]);
 
@@ -109,7 +101,7 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role' => $request->role
+                'role_id' => $request->role_id
             ]);
 
             $main ="public/users";
@@ -150,7 +142,7 @@ class UserController extends Controller
                 'embed_url' => $request->embed_url,
             ]);
 
-            if ($request->role == 2) {
+            if ($request->role_id == 2) {
                 
                 $request->validate([
                     'categories' => ['required', 'string']
@@ -160,26 +152,17 @@ class UserController extends Controller
                     'user_info_id' => $user_info->id,
                     'description' => $request->description
                 ]);
-                if($request->categories){
-                    $creator->categories()->sync(json_decode($request->categories));
-                }
+                $creator->categories()->sync(json_decode($request->categories));
             }
             
-            $role = Role::find($request->role);
+            $role = Role::find($request->role_id);
             $user->assignRole($role->name);
-    
-            if($user->role == 1) {
-                $role = 'Admin';
-            }elseif ($user->role == 2) {
-                $role = 'Creator';
-            }else {
-                $role = "User";
-            }
+
 
             $request->merge([
                 'status' => 1,
             ]);
-            $credentials = $request->only('email', 'password', 'role', 'status');
+            $credentials = $request->only('email', 'password', 'role_id', 'status');
             $token = null;
             $token = JWTAuth::attempt($credentials);
 
@@ -201,7 +184,7 @@ class UserController extends Controller
             'data'=> [
                 'id' =>  $user->id,
                 'name' => $user->name,
-                'role' => $role,
+                'role' => $user->role->name,
                 'status' => 'Active',
                 'access_token' => $token,
                 'token_type' => 'Bearer'
@@ -245,7 +228,7 @@ class UserController extends Controller
     public function user()
     {
         $user_info = UserInfo::where('user_id', Auth::user()->id)->get()->first();
-        if($user_info->user->role == 2) {
+        if($user_info->user->role_id == 2) {
             $creator = Creator::where('user_info_id', $user_info->id)->get()->first();
             $data =  CreatorResource::make($creator);
         }else {

@@ -17,8 +17,8 @@ class CreateContentsTable extends Migration
             $table->id();
             $table->foreignId('creator_id');
             $table->foreignId('category_id');
-            $table->string('name');
-            $table->text('text')->nullable();
+            $table->string('title');
+            $table->text('content')->nullable();
             $table->string('audio')->nullable();
             $table->string('video')->nullable();
             $table->string('image')->nullable();

@@ -8,7 +8,8 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\Access\Authorizable;
-
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -20,7 +21,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'status', 'last_seen'
+        'name', 'email', 'password', 'role_id', 'status', 'last_seen'
     ];
 
     /**
@@ -54,5 +55,10 @@ class User extends Authenticatable implements JWTSubject
     public function userInfo()
     {
         return $this->hasOne(UserInfo::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

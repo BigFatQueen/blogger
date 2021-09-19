@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-12 card p-3">    
         @php @endphp    
-            <form method="post" action="{{ route('admin.user.update', \App\Helper\Crypt::crypt()->encrypt( $user->id ))}}">
+            <form method="post" action="{{ route('admin.member.update', \App\Helper\Crypt::crypt()->encrypt( $user->id ))}}">
                 @csrf
                 @method('PUT')
                 <div class="row">

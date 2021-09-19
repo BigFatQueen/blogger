@@ -20,13 +20,16 @@ Route::get('/', function () {
 Auth::routes();
 
 //Backend
-Route::group(['prefix'=>'admin','as'=>'admin.', 'middleware' => ['role:admin|creator']], function(){
+Route::group(['prefix'=>'admin','as'=>'admin.', 'middleware' => ['role:admin']], function(){
 	Route::get('/dashboard','DashboardController@index')->name('dashboard');
 	Route::resource('category', 'CategoryController');
 	Route::resource('permission', 'PermissionController');
 	Route::resource('role', 'RoleController');
 	Route::resource('user', 'UserController');
 	Route::post('user/inactive/{id}', 'UserController@inActive')->name('user.inactive');
-
-	
+	Route::resource('member', 'MemberController');
+	Route::post('member/inactive/{id}', 'MemberController@inActive')->name('member.inactive');
+	Route::get('members/{id}', 'MemberController@getMembersUrl')->name('member.members');
+	Route::resource('content', 'ContentController');
+	Route::post('content/inactive/{id}', 'ContentController@inActive')->name('content.inactive');
 });

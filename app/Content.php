@@ -3,12 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Content extends Model
 {
     //
+    use SoftDeletes;
     protected $fillable = [
-        'creator_id', 'category_id', 'name', 'text', 'audio', 'video', 'image', 'link', 'embed_url', 'status'
+        'creator_id', 'category_id', 'title', 'content', 'audio', 'video', 'image', 'link', 'embed_url', 'status'
     ];
     
     public function creator()
@@ -19,5 +21,10 @@ class Content extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function subscriptionPlans()
+    {
+        return $this->belongsToMany(SubscriptionPlan::class);
     }
 }

@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div class="container mb-2 table-responsive" id="table-data">
-                @include('backend.user.table')
+                @include('backend.member.table')
             </div>
          </div>
      </div>
@@ -64,7 +64,7 @@
         })
 
         function getUsers(role_id, permission_id, keyword, page){
-          let url="user?page="+page;
+          let url="member?page="+page;
             $.ajax({
               type:'GET',
               url: url,

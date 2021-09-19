@@ -21,6 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="Start your development with a Dashboard for Bootstrap 4.">
   <meta name="author" content="Creative Tim">
+  <meta  name="csrf-token" content="{{csrf_token() }}">
   <title>Argon Dashboard - Free Dashboard for Bootstrap 4</title>
   <!-- Favicon -->
   <link rel="icon" href="{{ asset('backend_template/assets/img/brand/favicon.png') }}" type="image/png">
@@ -81,6 +82,18 @@
               <a class="nav-link {{ ((request()->is('admin/user')) || (request()->is('admin/user/*'))) ? 'active' : '' }}" href="{{route('admin.user.index')}}">
                 <i class="ni ni-circle-08 text-info"></i>
                 <span class="nav-link-text">User</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ ((request()->is('admin/member')) || (request()->is('admin/member/*')) || (request()->is('admin/members/*'))) ? 'active' : '' }}" href="{{route('admin.member.index')}}">
+                <i class="ni ni-circle-08 text-info"></i>
+                <span class="nav-link-text">Member</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{ ((request()->is('admin/content')) || (request()->is('admin/content/*'))) ? 'active' : '' }}" href="{{route('admin.content.index')}}">
+                <i class="ni ni-album-2 text-primary"></i>
+                <span class="nav-link-text">Content</span>
               </a>
             </li>
           </ul>

@@ -18,8 +18,8 @@ class ContentResource extends JsonResource
         return[
             'id' => $this->id,
             'category' => new CategoryResource(Category::find($this->category_id)),
-            'name' => $this->name,
-            'text' => $this->text,
+            'title' => $this->title,
+            'content' => $this->content,
             'audio' => $this->audio,
             'video' => $this->video,
             'image' => $this->image,

@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email', 100);
             $table->string('phone_no', 30)->nullable();
             $table->string('password');
-            $table->integer('role');
+            $table->foreignId('role_id');
             $table->integer('status')->default(1);
             $table->text('remember_token')->nullable();
             $table->timestamp('last_seen')->nullable();
