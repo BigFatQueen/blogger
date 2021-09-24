@@ -20,7 +20,7 @@
                 <td>{{ Str::limit ($row->content, 30) }}</td>                    
                 <td>
                     @php $images = json_decode($row->image); @endphp
-                    @if(count($images))
+                    @if($images != null)
                         <img src="{{ asset('/storage/'.$images[0]) }}" alt="Image placeholder" class="img-fluid w-100">
                     @endif
                 </td>            

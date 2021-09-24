@@ -27,4 +27,19 @@ class Content extends Model
     {
         return $this->belongsToMany(SubscriptionPlan::class);
     }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function polls()
+    {
+        return $this->hasMany(Poll::class);
+    }
 }

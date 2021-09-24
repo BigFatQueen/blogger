@@ -34,4 +34,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|use
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|user']], function () {
     Route::resource('subscription-plan','Api\SubscriptionPlanController');
     Route::resource('content','Api\ContentController');
+    Route::resource('like','Api\LikeController');
+    Route::resource('comment','Api\CommentController');
+    Route::resource('poll','Api\PollController');
 });

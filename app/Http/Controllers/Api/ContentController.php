@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Comment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Content;
 use App\Http\Resources\ContentResource;
-use App\SubscriptionPlan;
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\LikeResource;
+use App\Http\Resources\PollResource;
+use App\Like;
+use App\Poll;
 use Auth;
 class ContentController extends Controller
 {
@@ -47,7 +52,7 @@ class ContentController extends Controller
             'category_id' => 'required|max:20',
             'title' => 'required|string|max:255',
             'audio' => 'file|mimes:mp3,mpeg|max:1024', 
-            'video' => 'file|mimes:mp4,3gp|max:10480', 
+            'video' => 'file|mimes:mp4,3gp|max:20480', 
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'link' => 'max:255',
             'subscription_plan' => 'required',

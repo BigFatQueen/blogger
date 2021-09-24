@@ -43,7 +43,7 @@ class SubscriptionPlanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'level' => 'required|string|max:30|unique:subscription_plans',
+            'level' => 'required|string|max:30',
             'price' => 'required|max:11',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'description' => "max:255"

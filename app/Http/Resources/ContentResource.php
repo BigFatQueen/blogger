@@ -18,6 +18,7 @@ class ContentResource extends JsonResource
         return[
             'id' => $this->id,
             'category' => new CategoryResource(Category::find($this->category_id)),
+            'subscription_plans' => SubscriptionPlanResource::collection($this->subscriptionPlans),
             'title' => $this->title,
             'content' => $this->content,
             'audio' => $this->audio,
