@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Content;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\LikeResource;
-use App\Like;
+use App\Http\Resources\SubscriptionResource;
+use App\Subscription;
 use Illuminate\Http\Request;
 use Auth;
 
-class LikeController extends Controller
+class SubscriptionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +17,18 @@ class LikeController extends Controller
      */
     public function index()
     {
-        //
+        
+        $role = Auth::user()->role->name;
+        if ($role == 'creator') {
+            $subscriptions = Subscription::where('creator_id', Auth::user()->userInfo->creator->id)->get();
+        }else {
+            $subscriptions = Subscription::where('user_info_id', Auth::user()->userInfo->id)->get();
+        }
+        $subscriptions =  SubscriptionResource::collection($subscriptions);
+        return response()->json([
+            'success'=> true,
+            'data'=> $subscriptions
+        ],200);
     }
 
     /**
@@ -40,17 +50,27 @@ class LikeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'content_id' => 'required|max:11'
+            'creator_id' => 'required|max:20',
+            'subscription_plan_id' => 'required|max:20',
+            'subscription_fee' => 'required|max:11',
+            'fdate' => 'required',
+            'tdate' => 'required'
         ]);
-        $like = Like::create([
-            'content_id' => $request->content_id,
-            'user_info_id' => Auth::user()->userInfo->id
-        ]); 
-        $like =  LikeResource::make($like);
-    
+
+        $subscription = Subscription::create([
+            'creator_id' => $request->creator_id,
+            'user_info_id' => Auth::user()->userInfo->creator->id,
+            'subscription_plan_id' => $request->subscription_plan_id,
+            'subscription_fee' => $request->subscription_fee,
+            'fdate' => $request->fdate,
+            'tdate' => $request->tdate
+        ]);
+
+        $subscription = new SubscriptionResource($subscription);
+
         return response()->json([
-            'success' => true,
-            'data' => $like
+            'success'=> true,
+            'data'=> $subscription
         ],200);
     }
 
@@ -62,11 +82,11 @@ class LikeController extends Controller
      */
     public function show($id)
     {
-        $content = Content::find($id);
-        $like =  LikeResource::collection($content->likes);
+        $subscription = Subscription::find($id);
+        $subscription =  SubscriptionResource::make($subscription);
         return response()->json([
             'success'=> true,
-            'data'=> $like
+            'data'=> $subscription
         ],200);
     }
 
@@ -101,15 +121,6 @@ class LikeController extends Controller
      */
     public function destroy($id)
     {
-        $like = Like::find($id);
-        $like->delete();
-
-        return response()->json([
-            'success'=> true,
-            'data'=> [
-                    'code' => 200,
-                    'message' => "Like Successfully Remove!!"
-                ]
-            ],200);
+        //
     }
 }

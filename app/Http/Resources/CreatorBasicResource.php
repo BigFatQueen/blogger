@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use App\UserInfo;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PollResource extends JsonResource
+class CreatorBasicResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +16,9 @@ class PollResource extends JsonResource
     public function toArray($request)
     {
         //return parent::toArray($request);
-        return [
+        return[
             'id' => $this->id,
-            'content_id' => $this->content_id,
-            'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id)),
-            'status' => $this->status
+            'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id))
         ];
     }
 }

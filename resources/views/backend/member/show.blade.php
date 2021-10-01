@@ -28,7 +28,7 @@
                 <div class="col">
                   <div class="card-profile-stats d-flex justify-content-center">
                     <div>
-                      <span class="heading">22</span>
+                      <span class="heading">{{count($user->userInfo->creator->subscriptions)}}</span>
                       <span class="description">Subscriptions</span>
                     </div>
                   </div>

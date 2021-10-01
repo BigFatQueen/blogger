@@ -28,7 +28,7 @@
                 <div class="col">
                   <div class="card-profile-stats d-flex justify-content-center">
                     <div>
-                      <span class="heading">22</span>
+                      <span class="heading">{{count($content->creator->subscriptions)}}</span>
                       <span class="description">Subscriptions</span>
                     </div>
                   </div>
@@ -42,6 +42,24 @@
                   <i class="ni business_briefcase-24 mr-2"></i>{{$content->creator->userInfo->user->role->name}}
                 </div>
               </div>
+              <div class="text-center">
+                <h5 class="h3">
+                  Content Achievements:
+                </h5>
+              </div>
+              
+              <div class="col">
+                  <div class="card-profile-stats d-flex justify-content-center">
+                    <div>
+                      <span class="heading">{{count($content->likes)}}</span>
+                      <span class="description">Likes</span>
+                    </div>
+                    <div>
+                      <span class="heading">{{count($content->comments)}}</span>
+                      <span class="description">Comments</span>
+                    </div>
+                  </div>
+                </div>
             </div>
           </div>
         </div>

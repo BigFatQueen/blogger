@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Content;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ContentResource;
 use App\Http\Resources\PollResource;
 use App\Poll;
 use Illuminate\Http\Request;
@@ -65,10 +66,25 @@ class PollController extends Controller
     public function show($id)
     {
         $content = Content::find($id);
+        $total_votes = count($content->polls);
+        $yes_votes = count(Poll::where('content_id', $id)->where('status', 1)->get());
+        $votes = count(Poll::where('content_id', $id)->where('status', 2)->get());
+        $no_votes = count(Poll::where('content_id', $id)->where('status', 3)->get());
+        $total_votes = $yes_votes + $votes + $no_votes;
+        $yes_percentage = $yes_votes * (100 / $total_votes);
+        $percentage = $votes * (100 / $total_votes);
+        $no_percentage = $no_votes * (100 / $total_votes);
         $content =  PollResource::collection($content->polls);
         return response()->json([
             'success'=> true,
-            'data'=> $content
+            'data'=> [
+                'result' => [
+                    '1' => $yes_percentage,
+                    '2' => $percentage,
+                    '3' => $no_percentage
+                ],
+                'polls' => $content
+            ]
         ],200);
     }
 
@@ -93,8 +109,8 @@ class PollController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'content_id' => 'required|integer|max:11',
-            'status' => 'required|integer|max:11'
+            'content_id' => 'required|max:11',
+            'status' => 'required|max:11'
         ]);
         $poll = Poll::find($id);
         $poll->content_id = $request->content_id;

@@ -20,4 +20,5 @@ class UserInfo extends Model
     {
         return $this->hasOne(Creator::class);
     }
+    
 }

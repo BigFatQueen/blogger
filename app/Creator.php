@@ -25,4 +25,9 @@ class Creator extends Model
     {
         return $this->belongsToMany(SubscriptionPlan::class);
     }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }
