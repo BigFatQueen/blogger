@@ -68,7 +68,7 @@
             <div class="card-header">
               <div class="row align-items-center">
                 <div class="col-8">
-                  <h3 class="mb-0">Profile </h3>
+                  <h3 class="mb-0">Content </h3>
                 </div>
                 <div class="col-4 text-right">
                   <a href="{{URL::previous()}}" class="btn btn-sm btn-primary"><i class="fas fa-backward">  Back</i></a>
@@ -176,7 +176,7 @@
                         <label class="form-control-label" for="input-address">Link</label>
                         <div class="row">
                           <div class="col 12">
-                            <a href="{{$content->embed_url}}" target="_blank" rel="noopener noreferrer">{{$content->embed_url}}</a>
+                            <a href="{{$content->link}}" target="_blank" rel="noopener noreferrer">{{$content->link}}</a>
                           </div>
                         </div>
                       </div>
@@ -186,7 +186,7 @@
                         <label class="form-control-label" for="input-address">Embed URL</label>
                         <div class="row">
                           <div class="col 12">
-                            <iframe  src="{{$content->embed_url}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <iframe  src="https://www.youtube.com/embed/{{$content->embed_url}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                           </div>
                         </div>
                       </div>

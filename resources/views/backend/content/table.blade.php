@@ -25,7 +25,7 @@
                     @endif
                 </td>            
                 <td>
-                    <!-- <a href="{{route('admin.content.edit',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-primary btn-sm">Edit</a> -->
+                    <a href="{{route('admin.content.edit',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-primary btn-sm">Edit</a>
                     <a href="{{route('admin.content.show',\App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="btn btn-outline-success btn-sm">Show</a>
                     <form  method="post" action="{{route('admin.content.inactive', \App\Helper\Crypt::crypt()->encrypt($row->id))}}" class="d-inline-block" onsubmit="return confirm('Are you sure?')">
                         @csrf

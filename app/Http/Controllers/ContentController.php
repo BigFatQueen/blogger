@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\User;
+use App\UserInfo;
 use Illuminate\Support\Facades\Hash;
 use Cache;
 
@@ -90,8 +91,14 @@ class ContentController extends Controller
         
         $id = \App\Helper\Crypt::crypt()->decrypt( $id );
         $categories = Category::all();
+        $creators = UserInfo::join('users', 'user_infos.user_id', 'users.id')
+        ->where('role_id', 2)->orderBy('user_infos.id', 'desc')->select('user_infos.*')->get();
         $content = Content::find($id);
-        return view('backend.content.edit',compact('content' ,'categories'));
+        $content_subscription_plans = [];
+        foreach ($content->subscriptionPlans as $value) {
+            array_push($content_subscription_plans, $value->id);
+        }
+        return view('backend.content.edit',compact('content' ,'categories', 'creators', 'content_subscription_plans'));
     }
 
     /**
@@ -103,32 +110,78 @@ class ContentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $id = \App\Helper\Crypt::crypt()->decrypt($id);
         $request->validate([
-            "name"=> 'required|min:3|max:50',
-            'email' => 'required|string|email|max:255',
+            'category_id' => 'required|max:20',
+            'title' => 'required|string|max:255',
+            'link' => 'max:255',
+            'subscription_plan' => 'required',
         ]);
-        if ($request->change_pwd) {
+        
+        $creator_id = $request->creator_id;
+        $main ="public/creators";
+        $audio_folder = "$main/$creator_id/audios/";
+        $audio_url = "creators/$creator_id/audios/";
+
+        $video_folder = "$main/$creator_id/videos/";
+        $video_url = "creators/$creator_id/videos/";
+
+        $image_folder = "$main/$creator_id/images/";
+        $image_url = "creators/$creator_id/images/";
+
+        if ($request->file(['audio'])) {
             $request->validate([
-                'password' => 'required|string|confirmed',
+                'audio' => 'file|mimes:mp3,mpeg|max:1024',
             ]);
+            $audio = $request->file(['audio']);
+            $audio_name = date('Y-m-d H-m').$audio->getClientOriginalName();
+            $audio_path_url = $audio_url.$audio_name;
+            $audio->storeAs("$audio_folder", $audio_name);
+        } else {
+            $audio_path_url = $request->audio;
         }
 
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        if ($request->change_pwd) {
-            $user->password = Hash::make($request->password);
+        if ($request->file(['video'])) {
+            $request->validate([
+                'video' => 'file|mimes:mp4,3gp|max:20480',
+            ]);
+            $video = $request->file(['video']);
+            $video_name = date('Y-m-d H-m').$video->getClientOriginalName();
+            $video_path_url = $video_url.$video_name;
+            $video->storeAs("$video_folder", $video_name);
+        } else {
+            $video_path_url = $request->video;
         }
-        $user->save();
 
-        if ($request->permissions) {
-            $user->permissions()->sync($request->permissions);
+        if ($request->file(['image'])) {
+            $request->validate([
+                'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            ]);
+            $images = $request->file('image');
+            foreach($images as $image) {
+                $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+                $image_path_url[] = $image_url.$image_name;
+                $image->storeAs($image_folder, $image_name);
+            }
+            $image_path_url = json_encode($image_path_url);
+        } else {
+            $image_path_url = $request->image;
         }
+        
+        $id = \App\Helper\Crypt::crypt()->decrypt($id);
+        $content = Content::find($id);
+        $content->creator_id = $request->creator_id;
+        $content->category_id = $request->category_id;
+        $content->title = $request->title;
+        $content->content = $request->content;
+        $content->audio = $audio_path_url;
+        $content->video = $video_path_url;
+        $content->image = $image_path_url;
+        $content->link = $request->link;
+        $content->embed_url = $request->embed_url;
+        $content->save();
 
-        if ($request->logout && $request->change_pwd) {
-            Auth::logoutOtherDevices($user->password);
-        }
+        $content->subscriptionPlans()->sync($request->subscription_plan);
+
         return redirect()->route('admin.content.index')->with('status','Content was successfully updated!!');
     }
 

@@ -160,9 +160,6 @@ class ContentController extends Controller
         $request->validate([
             'category_id' => 'required|max:20',
             'title' => 'required|string|max:255',
-            'audio' => 'file|mimes:mp3,mpeg|max:1024', 
-            'video' => 'file|mimes:mp4,3gp|max:10480', 
-            'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'link' => 'max:255',
             'subscription_plan' => 'required',
         ]);
@@ -178,6 +175,9 @@ class ContentController extends Controller
         $image_url = "creators/$creator_id/images/";
 
         if ($request->file(['audio'])) {
+            $request->validate([
+                'audio' => 'file|mimes:mp3,mpeg|max:1024',
+            ]);
             $audio = $request->file(['audio']);
             $audio_name = date('Y-m-d H-m').$audio->getClientOriginalName();
             $audio_path_url = $audio_url.$audio_name;
@@ -187,6 +187,9 @@ class ContentController extends Controller
         }
 
         if ($request->file(['video'])) {
+            $request->validate([
+                'video' => 'file|mimes:mp4,3gp|max:20480',
+            ]);
             $video = $request->file(['video']);
             $video_name = date('Y-m-d H-m').$video->getClientOriginalName();
             $video_path_url = $video_url.$video_name;
@@ -196,6 +199,9 @@ class ContentController extends Controller
         }
 
         if ($request->file(['image'])) {
+            $request->validate([
+                'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            ]);
             $images = $request->file('image');
             foreach($images as $image) {
                 $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
@@ -206,6 +212,7 @@ class ContentController extends Controller
         } else {
             $image_path_url = $request->image;
         }
+        
         $content = Content::find($id);
         $content->creator_id = Auth::user()->userInfo->creator->id;
         $content->category_id = $request->category_id;

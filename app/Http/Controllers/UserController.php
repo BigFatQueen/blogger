@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\User;
+use App\UserInfo;
 use Illuminate\Support\Facades\Hash;
 use Cache;
 class UserController extends Controller
@@ -116,13 +117,64 @@ class UserController extends Controller
             ]);
         }
 
+        if ($request->phone_1) {
+            $request->validate([
+                'phone_1' => 'max:30',
+            ]);
+        }
+
         $user = User::find($id);
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->phone_no = $request->phone_1;
         if ($request->change_pwd) {
             $user->password = Hash::make($request->password);
         }
         $user->save();
+
+        $main ="public/users";
+        $cover_folder = "$main/$user->id/covers/";
+        $cover_url = "users/$user->id/covers/";
+
+        $profile_folder = "$main/$user->id/profiles/";
+        $profile_url = "users/$user->id/profiles/";
+
+        if ($request->phone_2) {
+            $request->validate([
+                'phone_2' => 'max:30',
+            ]);
+        }
+
+        if ($request->file(['cover_photo'])) {
+            $request->validate([
+                'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
+            ]);
+            $cover_photo = $request->file(['cover_photo']);
+            $cover_photo_name = date('Y-m-d H-m').$cover_photo->getClientOriginalName();
+            $cover_photo_url = $cover_url.$cover_photo_name;
+            $cover_photo->storeAs("$cover_folder", $cover_photo_name);
+        } else {
+            $cover_photo_url = $request->cover_photo;
+        }
+        if ($request->file(['profile_image'])) {
+            $request->validate([
+                'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
+            ]);
+            $profile_image = $request->file(['profile_image']);
+            $profile_image_name = date('Y-m-d H-m').$profile_image->getClientOriginalName();
+            $profile_image_url = $profile_url.$profile_image_name;
+            $profile_image->storeAs("$profile_folder", $profile_image_name);
+        } else {
+            $profile_image_url = $request->profile_image;
+        }
+        $user_info = UserInfo::where('user_id', $user->id)->get()->first();
+        $user_info->user_id = $user->id;
+        $user_info->phone_no = $request->phone_2;
+        $user_info->dob = $request->dob;
+        $user_info->cover_photo = $cover_photo_url;
+        $user_info->profile_image = $profile_image_url;
+        $user_info->embed_url = $request->embed_url;
+        $user_info->save();
 
         if ($request->permissions) {
             $user->permissions()->sync($request->permissions);
