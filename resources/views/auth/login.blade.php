@@ -48,6 +48,7 @@
                   <input class="custom-control-input" id="remember" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                   <label class="custom-control-label" for="remember">
                     <span class="text-muted">Remember me</span>
+                    <a href="{{ url('/login/google') }}" class="btn btn-google-plus"> Google</a>
                   </label>
                 </div>
                 <div class="text-center">

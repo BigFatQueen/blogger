@@ -26,7 +26,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {
 });
 
 //Creator / User
-Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|user']], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:admin|creator|user']], function () {
     Route::resource('category','Api\CategoryController');
 });
 
@@ -39,3 +39,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|use
     Route::resource('poll','Api\PollController');
     Route::resource('subscription','Api\SubscriptionController');
 });
+
+Route::get('v1/login/{provider}', 'SocialController@redirect');
+Route::get('v1/login/{provider}/callback','SocialController@Callback');

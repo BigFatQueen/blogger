@@ -33,3 +33,6 @@ Route::group(['prefix'=>'admin','as'=>'admin.', 'middleware' => ['role:admin']],
 	Route::resource('content', 'ContentController');
 	Route::post('content/inactive/{id}', 'ContentController@inActive')->name('content.inactive');
 });
+
+Route::get('/login/{provider}', 'SocialController@redirect');
+Route::get('/login/{provider}/callback','SocialController@Callback');

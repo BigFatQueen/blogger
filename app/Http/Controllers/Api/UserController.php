@@ -60,6 +60,7 @@ class UserController extends Controller
                     ]
                 ],400);
         }
+        dd($credentials);
         $token = JWTAuth::attempt($credentials);
 
         $user = Auth::user();
