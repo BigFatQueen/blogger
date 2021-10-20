@@ -16,15 +16,18 @@ use JWTAuth;
 
 class SocialController extends Controller
 {
-    public function redirect($provider)
+    public function redirect()
     {
-        return Response::json([
-            'url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
-        ]);
+        // return 'helo';
+        return Socialite::driver('google')->redirect();
+        // return Response::json([
+        //     'url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
+        // ]);
     }
-    public function Callback($provider)
+    public function Callback()
     {
-        $userSocial = Socialite::driver($provider)->stateless()->user();
+        $userSocial = Socialite::driver('google')->user();
+
         $user =  User::where(['email' => $userSocial->getEmail()])->first();
         if($user){
             //Auth::login($user);
@@ -87,5 +90,75 @@ class SocialController extends Controller
                     ]
                 ],200);
         }
+    }
+
+    public function googleLogin(Request $request){
+
+       $user =  User::where(['email' => $request->email])->first();
+       if($user){
+
+        $token = JWTAuth::attempt([
+                "email" => $request->email,
+                "password" => $request->token,
+                "status" => 1
+            ]);
+            $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
+            Cache::put('active-' . Auth::user()->id, true, $expiresAt);
+            // last seen
+            User::where('id', Auth::user()->id)->update(['last_seen' => (new \DateTime())->format("Y-m-d H:i:s")]);
+            return response()->json([
+                'success'=> true,
+                'data'=> [
+                    'id' =>  $user->id,
+                    'name' => $user->name,
+                    'role' => $user->role->name,
+                    'status' => 'Active',
+                    'access_token' => $token,
+                    'token_type' => 'Bearer'
+                    ]
+                ],200);
+
+       }else{
+
+         $user = User::create([
+                    'name'          => $request->name,
+                    'email'         => $request->email,
+                    'password'   => Hash::make($request->token),
+                    'provider_id'   => $request->token,
+                    'provider'      => $request->provider,
+                    'role_id' => 3
+                ]);
+
+         $user_info = UserInfo::create([
+                'user_id' => $user->id,
+                'dob' => '1997-01-10',
+                'cover_photo' => $request->image,
+                'profile_image' => $request->image,
+            ]);
+            $token = JWTAuth::attempt([
+                "email" => $request->email,
+                "password" => $request->token,
+                "status" => 1
+            ]);
+
+            $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
+            Cache::put('active-' . Auth::user()->id, true, $expiresAt);
+            // last seen
+            User::where('id', Auth::user()->id)->update(['last_seen' => (new \DateTime())->format("Y-m-d H:i:s")]);
+            return response()->json([
+                'success'=> true,
+                'data'=> [
+                    'id' =>  $user->id,
+                    'name' => $user->name,
+                    'role' => $user->role->name,
+                    'status' => 'Active',
+                    'access_token' => $token,
+                    'token_type' => 'Bearer'
+                    ]
+                ],200);
+
+
+
+       }
     }
 }

@@ -29,11 +29,17 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    // 'google' => [
+    //     'client_id'     => env('GOOGLE_CLIENT_ID', '190896857546-uud8pjeuoc5e5i6sp2h40avupif2mb04.apps.googleusercontent.com'),
+    //     'client_secret' => env('GOOGLE_CLIENT_SECRET', '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'),
+    //     'redirect'      => env('GOOGLE_URL', 'http://localhost:3000/login/google'),
+    // ],
     'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID', '190896857546-uud8pjeuoc5e5i6sp2h40avupif2mb04.apps.googleusercontent.com'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET', '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'),
-        'redirect'      => env('GOOGLE_URL', 'http://localhost:3000/login/google'),
+        'client_id'     => env('GOOGLE_CLIENT_ID', '37192225670-f4gb7ohcfij72kvu5mfn5qtbque098q8.apps.googleusercontent.com'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET', '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'),
+        'redirect'      => 'http://localhost:8000/api/auth/google/callback',
     ],
+
     'facebook' => [
         'client_id'     => env('FACEBOOK_CLIENT_ID', '407662997406507'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET', '5c80d0f7e2762ec789507e95ea7e403f'),
