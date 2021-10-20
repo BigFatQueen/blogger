@@ -49,6 +49,7 @@
                   <label class="custom-control-label" for="remember">
                     <span class="text-muted">Remember me</span>
                     <a href="{{ url('/login/google') }}" class="btn btn-google-plus"> Google</a>
+                    <a href="{{ url('/login/facebook') }}" class="btn btn-facebook"> Facebook</a>
                   </label>
                 </div>
                 <div class="text-center">

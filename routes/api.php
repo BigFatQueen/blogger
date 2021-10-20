@@ -40,5 +40,5 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|use
     Route::resource('subscription','Api\SubscriptionController');
 });
 
-Route::get('v1/login/{provider}', 'SocialController@redirect');
-Route::get('v1/login/{provider}/callback','SocialController@Callback');
+Route::get('v1/login/{provider}', 'Api\SocialController@redirect');
+Route::get('v1/login/{provider}/callback','Api\SocialController@Callback');

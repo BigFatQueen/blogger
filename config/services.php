@@ -32,7 +32,12 @@ return [
     'google' => [
         'client_id'     => env('GOOGLE_CLIENT_ID', '190896857546-uud8pjeuoc5e5i6sp2h40avupif2mb04.apps.googleusercontent.com'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET', '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'),
-        'redirect'      => env('GOOGLE_URL', 'http://localhost:8000/login/google/callback'),
+        'redirect'      => env('GOOGLE_URL', 'http://localhost:3000/login/google'),
+    ],
+    'facebook' => [
+        'client_id'     => env('FACEBOOK_CLIENT_ID', '407662997406507'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET', '5c80d0f7e2762ec789507e95ea7e403f'),
+        'redirect'      => env('FACEBOOK_URL', 'https://091d-8-29-105-26.ngrok.io/login/facebook/callback'),
     ],
 
 ];
