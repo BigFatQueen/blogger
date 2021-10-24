@@ -24,9 +24,9 @@ class SocialController extends Controller
         //     'url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
         // ]);
     }
-    public function Callback()
+    public function callback($provider)
     {
-        $userSocial = Socialite::driver('facebook')->user();
+        $userSocial = Socialite::driver($provider)->user();
 
         $user =  User::where(['email' => $userSocial->getEmail()])->first();
         if($user){
@@ -136,7 +136,7 @@ class SocialController extends Controller
         }
     }
 
-    public function googleLogin(Request $request){
+    public function login(Request $request){
 
        $user =  User::where(['email' => $request->email])->first();
        if($user){

@@ -17,8 +17,18 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::post('v1/login', 'Api\UserController@login');
-Route::post('v1/register', 'Api\UserController@register');
+Route::group(['prefix' => 'v1'], function () {
+    Route::post('auth/login', 'Api\UserController@login');
+    Route::post('auth/register', 'Api\UserController@register');
+
+    Route::post('auth/{provider}', 'Api\SocialController@login');
+    Route::get('auth/{provider}/callback', 'Api\SocialController@callback');
+    
+    Route::get('auth/phone/send-sms/{no}', 'Api\SmsController@sendSMS');
+    Route::post('auth/phone/register', 'Api\SmsController@register');
+    Route::post('auth/phone/login', 'Api\SmsController@login');
+
+});   
 
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {
     Route::get('logout','Api\UserController@logout');
@@ -39,13 +49,3 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|use
     Route::resource('poll','Api\PollController');
     Route::resource('subscription','Api\SubscriptionController');
 });
-
-Route::get('v1/login/{provider}', 'Api\SocialController@redirect');
-Route::get('v1/login/{provider}/callback','Api\SocialController@Callback');
-
-Route::post('v1/auth/google', 'Api\SocialController@googleLogin');
-Route::get('auth/google/callback', 'Api\SocialController@Callback');
-
-Route::get('v1/phone/send-sms/{no}', 'Api\SmsController@sendSMS');
-Route::post('v1/phone/register', 'Api\SmsController@register');
-Route::post('v1/phone/login', 'Api\SmsController@login');
