@@ -26,17 +26,38 @@ class SocialController extends Controller
     }
     public function Callback()
     {
-        $userSocial = Socialite::driver('google')->user();
+        $userSocial = Socialite::driver('facebook')->user();
 
         $user =  User::where(['email' => $userSocial->getEmail()])->first();
         if($user){
-            //Auth::login($user);
-            //dd($userSocial);
-            $token = JWTAuth::attempt([
+            $credentials = [
                 "email" => $userSocial->getEmail(),
                 "password" => $userSocial->getId(),
                 "status" => 1
-            ]);
+            ];
+
+            $token = null;
+            try {
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return response()->json([
+                        'success'=> false,
+                        'errors'=> [
+                                'code' => 400,
+                                'message' => "Invalid Login User"
+                            ]
+                        ],400);
+                }
+            } catch (JWTAuthException $e) {
+                return response()->json([
+                    'success'=> false,
+                    'errors'=> [
+                            'code' => 400,
+                            'message' => "Failed to create token"
+                        ]
+                    ],400);
+            }
+
+            $token = JWTAuth::attempt($credentials);
             $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
             Cache::put('active-' . Auth::user()->id, true, $expiresAt);
             // last seen
@@ -58,21 +79,44 @@ class SocialController extends Controller
                     'email'         => $userSocial->getEmail(),
                     'password'   => Hash::make($userSocial->getId()),
                     'provider_id'   => $userSocial->getId(),
-                    'provider'      => $provider,
+                    'provider'      => "Google",
                     'role_id' => 3
                 ]);
 
             $user_info = UserInfo::create([
                 'user_id' => $user->id,
-                'dob' => '1997-01-10',
                 'cover_photo' => $userSocial->getAvatar(),
                 'profile_image' => $userSocial->getAvatar(),
             ]);
-            $token = JWTAuth::attempt([
+
+            $credentials = [
                 "email" => $userSocial->getEmail(),
                 "password" => $userSocial->getId(),
                 "status" => 1
-            ]);
+            ];
+
+            $token = null;
+            try {
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return response()->json([
+                        'success'=> false,
+                        'errors'=> [
+                                'code' => 400,
+                                'message' => "Invalid Login User"
+                            ]
+                        ],400);
+                }
+            } catch (JWTAuthException $e) {
+                return response()->json([
+                    'success'=> false,
+                    'errors'=> [
+                            'code' => 400,
+                            'message' => "Failed to create token"
+                        ]
+                    ],400);
+            }
+
+            $token = JWTAuth::attempt($credentials);
 
             $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
             Cache::put('active-' . Auth::user()->id, true, $expiresAt);
@@ -96,12 +140,34 @@ class SocialController extends Controller
 
        $user =  User::where(['email' => $request->email])->first();
        if($user){
-
-        $token = JWTAuth::attempt([
+            $credentials = [
                 "email" => $request->email,
                 "password" => $request->token,
                 "status" => 1
-            ]);
+            ];
+
+            $token = null;
+            try {
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return response()->json([
+                        'success'=> false,
+                        'errors'=> [
+                                'code' => 400,
+                                'message' => "Invalid Login User"
+                            ]
+                        ],400);
+                }
+            } catch (JWTAuthException $e) {
+                return response()->json([
+                    'success'=> false,
+                    'errors'=> [
+                            'code' => 400,
+                            'message' => "Failed to create token"
+                        ]
+                    ],400);
+            }
+
+            $token = JWTAuth::attempt($credentials);
             $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
             Cache::put('active-' . Auth::user()->id, true, $expiresAt);
             // last seen
@@ -131,15 +197,37 @@ class SocialController extends Controller
 
          $user_info = UserInfo::create([
                 'user_id' => $user->id,
-                'dob' => '1997-01-10',
                 'cover_photo' => $request->image,
                 'profile_image' => $request->image,
             ]);
-            $token = JWTAuth::attempt([
+            
+            $credentials = [
                 "email" => $request->email,
                 "password" => $request->token,
                 "status" => 1
-            ]);
+            ];
+            $token = null;
+            try {
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return response()->json([
+                        'success'=> false,
+                        'errors'=> [
+                                'code' => 400,
+                                'message' => "Invalid Login User"
+                            ]
+                        ],400);
+                }
+            } catch (JWTAuthException $e) {
+                return response()->json([
+                    'success'=> false,
+                    'errors'=> [
+                            'code' => 400,
+                            'message' => "Failed to create token"
+                        ]
+                    ],400);
+            }
+
+            $token = JWTAuth::attempt($credentials);
 
             $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min
             Cache::put('active-' . Auth::user()->id, true, $expiresAt);
@@ -156,9 +244,6 @@ class SocialController extends Controller
                     'token_type' => 'Bearer'
                     ]
                 ],200);
-
-
-
        }
     }
 }

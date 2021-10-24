@@ -45,5 +45,7 @@ return [
         'client_secret' => env('FACEBOOK_CLIENT_SECRET', '5c80d0f7e2762ec789507e95ea7e403f'),
         'redirect'      => env('FACEBOOK_URL', 'https://091d-8-29-105-26.ngrok.io/login/facebook/callback'),
     ],
-
+    'nexmo' => [
+        'sms_from' => '15556666666',
+    ],
 ];

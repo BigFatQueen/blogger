@@ -17,7 +17,7 @@ class CreateUserInfosTable extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->string('phone_no', 30)->nullable();
-            $table->date('dob');
+            $table->date('dob')->nullable();;
             $table->string('cover_photo')->default('users/cover_photo.png');
             $table->string('profile_image')->default('users/profile_image.png');
             $table->text('embed_url')->nullable();

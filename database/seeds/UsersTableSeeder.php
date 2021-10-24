@@ -18,8 +18,6 @@ class UsersTableSeeder extends Seeder
                 'email' => 'admin@gmail.com',
                 'password' => bcrypt('admin'),
                 'role_id' => 1,
-                'provider' => 'web',
-                'provider_id' => 1,
                 'created_at' => date('Y-m-d H:m:s'),
                 'updated_at' => date('Y-m-d H:m:s'),
         ]);
@@ -30,8 +28,6 @@ class UsersTableSeeder extends Seeder
                 'email' => 'creator@gmail.com',
                 'password' => bcrypt('creator'),
                 'role_id' => 2,
-                'provider' => 'web',
-                'provider_id' => 1,
                 'created_at' => date('Y-m-d H:m:s'),
                 'updated_at' => date('Y-m-d H:m:s'),
         ]);
@@ -42,8 +38,6 @@ class UsersTableSeeder extends Seeder
             'email' => 'user@gmail.com',
             'password' => bcrypt('user'),
             'role_id' => 3,
-            'provider' => 'web',
-            'provider_id' => 1,
             'created_at' => date('Y-m-d H:m:s'),
             'updated_at' => date('Y-m-d H:m:s'),
         ]);

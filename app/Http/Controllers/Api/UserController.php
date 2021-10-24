@@ -92,8 +92,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:100', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'phone_no' => ['max:30'],
-            'role_id' => ['required', 'integer' , 'max:11'],
-            'dob' => ['required']
+            'role_id' => ['required', 'integer' , 'max:11']
         ]);
 
         DB::beginTransaction();
