@@ -33,6 +33,7 @@ Route::group(['prefix' => 'v1'], function () {
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {
     Route::get('logout','Api\UserController@logout');
     Route::get('user','Api\UserController@user');
+    Route::post('user/update','Api\UserController@update')->name('user.update');
 });
 
 //Creator / User
