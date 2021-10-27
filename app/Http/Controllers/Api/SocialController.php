@@ -79,9 +79,10 @@ class SocialController extends Controller
                     'email'         => $userSocial->getEmail(),
                     'password'   => Hash::make($userSocial->getId()),
                     'provider_id'   => $userSocial->getId(),
-                    'provider'      => "Google",
+                    'provider'      => $provider,
                     'role_id' => 3
                 ]);
+            $user->assignRole('user');
 
             $user_info = UserInfo::create([
                 'user_id' => $user->id,
@@ -194,6 +195,8 @@ class SocialController extends Controller
                     'provider'      => $request->provider,
                     'role_id' => 3
                 ]);
+
+            $user->assignRole('user');
 
          $user_info = UserInfo::create([
                 'user_id' => $user->id,
