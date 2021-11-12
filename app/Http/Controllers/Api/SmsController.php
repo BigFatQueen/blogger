@@ -34,7 +34,7 @@ class SmsController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'phone_no' => 'required',
+            'phone_no' => 'required|unique:users,phone_no',
             'password' => 'required|string',
             'role_id' => 'required'
         ]);
@@ -86,7 +86,7 @@ class SmsController extends Controller
             'success'=> true,
             'data'=> [
                 'id' =>  $user->id,
-                'name' => $user->name,
+                'name' => "User",
                 'role' => $user->role->name,
                 'status' => 'Active',
                 'access_token' => $token,
