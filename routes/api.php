@@ -30,23 +30,26 @@ Route::group(['prefix' => 'v1'], function () {
 
 });   
 
-// Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {
+Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {
+//Route::group(['prefix' => 'v1'], function () {
     Route::get('logout','Api\UserController@logout');
     Route::get('user','Api\UserController@user');
     Route::post('user/update','Api\UserController@update')->name('user.update');
-// });
+});
 
 //Creator / User
 // Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:admin|creator|user']], function () {
+Route::group(['prefix' => 'v1'], function () {
     Route::resource('category','Api\CategoryController');
-// });
+});
 
 //Creator
 // Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|user']], function () {
+Route::group(['prefix' => 'v1'], function () {
     Route::resource('subscription-plan','Api\SubscriptionPlanController');
     Route::resource('content','Api\ContentController');
     Route::resource('like','Api\LikeController');
     Route::resource('comment','Api\CommentController');
     Route::resource('poll','Api\PollController');
     Route::resource('subscription','Api\SubscriptionController');
-// });
+});

@@ -245,7 +245,6 @@ class UserController extends Controller
         $id = Auth::user()->id;
         $request->validate([
             "name"=> 'required|min:3|max:50',
-            'password' => 'required|string|max:255',
             'role_id' => 'required',
             'cover_photo' => 'required',
             'profile_image' => 'required',
