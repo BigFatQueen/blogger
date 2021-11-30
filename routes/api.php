@@ -46,6 +46,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:admin|creat
 //Creator
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|user']], function () {
 // Route::group(['prefix' => 'v1'], function () {
+    Route::get('region','Api\RegionController@index');
     Route::resource('subscription-plan','Api\SubscriptionPlanController');
     Route::resource('content','Api\ContentController');
     Route::resource('like','Api\LikeController');

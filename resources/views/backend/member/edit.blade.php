@@ -144,6 +144,29 @@
                 <hr class="my-4" />
                 <h6 class="heading-small text-muted mb-4">Other information</h6>
                 <div class="row">
+                <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label for="phone_1">Region<i class="text-danger"></i></label>
+                            <select name="region_id" id="" class="form-control region_id">
+                                <option value="">Choose One Region</option>
+                                @foreach ($regions as $region)
+                                    <option value="{{$region->id}}" @if($region->id == $user->userInfo->region_id) selected @endif>{{$region->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="address">Address</label>
+                            <textarea id="address" rows="4" class="form-control @error('address') is-invalid @enderror" name="address" placeholder="Address">{{$user->userInfo->address}}</textarea>
+                            @error('address')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
                     <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="form-group">
                             <label for="phone_2">Phone Number<i class="text-danger"></i></label>
@@ -153,6 +176,28 @@
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group custom-control custom-control-alternative custom-checkbox">
+                            <label for="role">Gender</label>
+                            <div class="row">
+                                <div class="custom-control custom-radio mb-3">
+                                    <input type="radio" id="male" name="gender" class="custom-control-input" value="male" @if($user->userInfo->gender == NULL || $user->userInfo->gender == 'male') checked @endif>
+                                    <label class="custom-control-label" for="male">Male</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="female" name="gender" class="custom-control-input" value="female" @if($user->userInfo->gender == 'female') checked @endif>
+                                    <label class="custom-control-label" for="female">Female</label>
+                                </div>
+
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="others" name="gender" class="custom-control-input" value="others" @if($user->userInfo->gender == 'others') checked @endif>
+                                    <label class="custom-control-label" for="others">Others</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -204,6 +249,18 @@
                             <label class="form-control-label" for="description">Description</label>
                             <textarea id="description" rows="4" class="form-control @error('description') is-invalid @enderror" name="description" placeholder="A few words about you ...">{{$user->userInfo->creator->description}}</textarea>
                             @error('description')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="bio">Bio</label>
+                            <textarea id="bio" rows="4" class="form-control @error('bio') is-invalid @enderror" name="bio" placeholder="Bio">{{$user->userInfo->bio}}</textarea>
+                            @error('bio')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
 use App\UserInfo;
+use App\UserInfoSocialLink;
 use DB;
 use Hash;
 use JWTAuth;
@@ -286,6 +287,12 @@ class UserController extends Controller
                 ]);
             }
 
+            if ($request->gender) {
+                $request->validate([
+                    'gender' => 'max:30',
+                ]);
+            }
+
             if ($request->file(['cover_photo'])) {
                 $request->validate([
                     'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
@@ -309,15 +316,37 @@ class UserController extends Controller
                 $profile_image_url = $request->profile_image;
             }
             $user_info = UserInfo::where('user_id', $user->id)->get()->first();
+
+            if ($request->socials != null) {
+                $user_info_social_links = UserInfoSocialLink::where('user_info_id', $user_info->id)->get();
+                foreach ($user_info_social_links as $user_info_social_link) {
+                    $user_info_social_link->delete();
+                }
+                $socials = json_decode($request->socials);
+                foreach($socials as $social) {
+                    $user_info_social = new UserInfoSocialLink();
+                    $user_info_social->user_info_id = $user_info->id;
+                    $user_info_social->name = $social[0];
+                    $user_info_social->link = $social[1];
+                    $user_info_social->save();
+                }
+            }
+
             $user_info->user_id = $user->id;
+            $user_info->region_id = $request->region_id;
+            $user_info->address = $request->address;
             $user_info->phone_no = $request->phone_2;
+            $user_info->gender = $request->gender;
             $user_info->dob = $request->dob;
             $user_info->cover_photo = $cover_photo_url;
             $user_info->profile_image = $profile_image_url;
-            $user_info->embed_url = $request->embed_url;
+            $user_info->bio = $request->bio;
             $user_info->save();
+
+            $user_info =  UserInfoResource::make($user_info);
+
             DB::commit();       
-            return response()->json(['status' => true, 'response'=>'Successfully Update Profile'], 200);
+            return response()->json(['status' => true, 'response'=>'Successfully Update Profile', 'data'=> $user_info], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['status' => false, 'response'=>'Can\'t Update Profile'], 200);

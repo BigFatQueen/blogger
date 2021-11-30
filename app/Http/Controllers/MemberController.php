@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Region;
 use App\Category;
 use App\Creator;
 use Illuminate\Http\Request;
@@ -90,6 +91,7 @@ class MemberController extends Controller
         $user = User::where('id', $id)->first();
         $roles = Role::where('id', '!=', 1)->orderBy('id', 'desc')->get();
         $permissions = Permission::orderBy('id', 'desc')->get();
+        $regions = Region::all();
         $user_permissions = [];
         foreach ($user->permissions as $value) {
             array_push($user_permissions, $value->name);
@@ -100,7 +102,7 @@ class MemberController extends Controller
         foreach ($creator->categories as $value) {
             array_push($user_categories, $value->name);
         }
-        return view('backend.member.edit',compact('user' ,'roles', 'permissions', 'user_permissions', 'categories', 'user_categories'));
+        return view('backend.member.edit',compact('user' ,'roles', 'permissions', 'user_permissions', 'categories', 'user_categories', 'regions'));
     }
 
     /**
@@ -179,11 +181,14 @@ class MemberController extends Controller
 
             $user_info = UserInfo::where('user_id', $user->id)->get()->first();
             $user_info->user_id = $user->id;
+            $user_info->region_id = $request->region_id;
+            $user_info->address = $request->address;
             $user_info->phone_no = $request->phone_2;
+            $user_info->gender = $request->gender;
             $user_info->dob = $request->dob;
             $user_info->cover_photo = $cover_photo_url;
             $user_info->profile_image = $profile_image_url;
-            $user_info->embed_url = $request->embed_url;
+            $user_info->bio = $request->bio;
             $user_info->save();
       
             $request->validate([

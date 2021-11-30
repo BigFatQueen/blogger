@@ -20,5 +20,9 @@ class UserInfo extends Model
     {
         return $this->hasOne(Creator::class);
     }
+    public function socials()
+    {
+        return $this->hasMany(UserInfoSocialLink::class);
+    }
     
 }

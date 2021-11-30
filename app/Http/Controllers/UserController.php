@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Creator;
+use App\Region;
 use Illuminate\Http\Request;
 use App\Helper\Log;
 use App\Helper\UserHelper;
@@ -90,11 +91,12 @@ class UserController extends Controller
         $user = User::where('id', $id)->first();
         $roles = Role::orderBy('id', 'desc')->get();
         $permissions = Permission::orderBy('id', 'desc')->get();
+        $regions = Region::all();
         $user_permissions = [];
         foreach ($user->permissions as $value) {
             array_push($user_permissions, $value->name);
         }
-        return view('backend.user.edit',compact('user' ,'roles', 'permissions', 'user_permissions'));
+        return view('backend.user.edit',compact('user' ,'roles', 'permissions', 'user_permissions', 'regions'));
     }
 
     /**
@@ -109,7 +111,6 @@ class UserController extends Controller
         $id = \App\Helper\Crypt::crypt()->decrypt($id);
         $request->validate([
             "name"=> 'required|min:3|max:50',
-            'email' => 'required|string|email|max:255',
         ]);
         if ($request->change_pwd) {
             $request->validate([
@@ -145,6 +146,12 @@ class UserController extends Controller
             ]);
         }
 
+        if ($request->gender) {
+            $request->validate([
+                'gender' => 'max:30',
+            ]);
+        }
+
         if ($request->file(['cover_photo'])) {
             $request->validate([
                 'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
@@ -169,11 +176,14 @@ class UserController extends Controller
         }
         $user_info = UserInfo::where('user_id', $user->id)->get()->first();
         $user_info->user_id = $user->id;
+        $user_info->region_id = $request->region_id;
+        $user_info->address = $request->address;
         $user_info->phone_no = $request->phone_2;
+        $user_info->gender = $request->gender;
         $user_info->dob = $request->dob;
         $user_info->cover_photo = $cover_photo_url;
         $user_info->profile_image = $profile_image_url;
-        $user_info->embed_url = $request->embed_url;
+        $user_info->bio = $request->bio;
         $user_info->save();
 
         if ($request->permissions) {

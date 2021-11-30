@@ -16,14 +16,18 @@ class CreateUserInfosTable extends Migration
         Schema::create('user_infos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
+            $table->foreignId('region_id')->nullable();
+            $table->text('address')->nullable();
             $table->string('phone_no', 30)->nullable();
+            $table->string('gender', 30)->nullable();
             $table->date('dob')->nullable();;
             $table->string('cover_photo')->default('users/cover_photo.png');
             $table->string('profile_image')->default('users/profile_image.png');
-            $table->text('embed_url')->nullable();
+            $table->text('bio')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('region_id')->references('id')->on('regions')->onDelete('cascade');
         });
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\UserInfo;
+use App\Region;
 use App\Http\Resources\UserInfoResource;
 use App\Http\Resources\CategoryResource;
 
