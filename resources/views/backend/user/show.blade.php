@@ -39,7 +39,8 @@
                   {{$user->name}}<span class="font-weight-light">, @if ($user->role_id != 1) {{$user->userInfo->phone_no}} @endif</span>
                 </h5>
                 <div class="h5 mt-4">
-                  <i class="ni business_briefcase-24 mr-2"></i>{{$user->role->name}}
+                  <i class="ni business_briefcase-24 mr-2"></i>{{$user->role->name}}, {{$user->userInfo->gender}}
+                  <i class="ni business_briefcase-24 mr-2"></i><a href="{{$user->userInfo->profile_url}}" target="_blank">{{$user->userInfo->profile_url}}</a>
                 </div>
               </div>
             </div>
@@ -89,26 +90,74 @@
                         <input disabled type="text" id="input-last-name" class="form-control" placeholder="" value="{{$user->userInfo->dob}}">
                       </div>
                     </div>
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label for="phone_1">Region<i class="text-danger"></i></label>
+                            @if($user->userInfo->region_id)
+                              <input disabled type="text" id="input-last-name" class="form-control" placeholder="" value="{{$user->userInfo->region->name}}">
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label class="form-control-label" for="address">Address</label>
+                            <textarea disabled id="address" rows="4" class="form-control @error('address') is-invalid @enderror" name="address" placeholder="Address">{{$user->userInfo->address}}</textarea>
+                            @error('address')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="form-group">
+                            <label class="form-control-label" for="bio">Bio</label>
+                            <textarea disabled id="bio" rows="4" class="form-control @error('bio') is-invalid @enderror" name="bio" placeholder="Bio">{{$user->userInfo->bio}}</textarea>
+                            @error('bio')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
                   </div>
                   @endif
                 </div>
                 <hr class="my-4" />
                 <!-- Address -->
                 @if ($user->role_id != 1)
-                <h6 class="heading-small text-muted mb-4">Other information</h6>
-                <div class="pl-lg-4">
-                  <div class="row">
-                    <div class="col-md-12">
-                      <div class="form-group">
-                        <label class="form-control-label" for="input-address">Embed URL</label>
-                        <div class="row">
-                          <div class="col 12">
-                            <iframe  src="{{$user->userInfo->embed_url}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <h6 class="heading-small text-muted mb-4">Social Links</h6>
+                <div class="row">
+                    @if($user->userInfo->socials != null)
+                        @foreach($user->userInfo->socials as $social)
+                            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="social_name">Social:<i class="text-danger">*</i></label>
+                                    <input disabled type="text" name="social_name[]" class="form-control @error('social_name') is-invalid @enderror" value="{{$social->name}}" autofocus id="name">
+                                    @error('social_name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="link">Link<i class="text-danger">*</i></label>
+                                    <input disabled type="text" name="link[]" class="form-control @error('link') is-invalid @enderror" value="{{$social->link}}" autofocus id="email">
+                                    @error('link')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
                 <hr class="my-4" />
                 @endif

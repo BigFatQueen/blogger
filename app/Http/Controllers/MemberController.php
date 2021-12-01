@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Region;
 use App\Category;
 use App\Creator;
+use App\UserInfoSocialLink;
 use Illuminate\Http\Request;
 use App\Helper\Log;
 use App\Helper\UserHelper;
@@ -130,54 +131,66 @@ class MemberController extends Controller
             ]);
         }
 
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone_no = $request->phone_1;
-
-        if ($request->change_pwd) {
-            $user->password = Hash::make($request->password);
-        }
-        $user->save();
-
-        $main ="public/users";
-        $cover_folder = "$main/$user->id/covers/";
-        $cover_url = "users/$user->id/covers/";
-
-        $profile_folder = "$main/$user->id/profiles/";
-        $profile_url = "users/$user->id/profiles/";
-
-        if ($request->phone_2) {
-            $request->validate([
-                'phone_2' => 'max:30',
-            ]);
-        }
-
-        if ($request->file(['cover_photo'])) {
-            $request->validate([
-                'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
-            ]);
-            $cover_photo = $request->file(['cover_photo']);
-            $cover_photo_name = date('Y-m-d H-m').$cover_photo->getClientOriginalName();
-            $cover_photo_url = $cover_url.$cover_photo_name;
-            $cover_photo->storeAs("$cover_folder", $cover_photo_name);
-        } else {
-            $cover_photo_url = $request->cover_photo;
-        }
-        if ($request->file(['profile_image'])) {
-            $request->validate([
-                'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
-            ]);
-            $profile_image = $request->file(['profile_image']);
-            $profile_image_name = date('Y-m-d H-m').$profile_image->getClientOriginalName();
-            $profile_image_url = $profile_url.$profile_image_name;
-            $profile_image->storeAs("$profile_folder", $profile_image_name);
-        } else {
-            $profile_image_url = $request->profile_image;
-        }
 
         DB::beginTransaction();
         try {
+            $user = User::find($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone_no = $request->phone_1;
+
+            if ($request->change_pwd) {
+                $user->password = Hash::make($request->password);
+            }
+            $user->save();
+
+            $main ="public/users";
+            $cover_folder = "$main/$user->id/covers/";
+            $cover_url = "users/$user->id/covers/";
+
+            $profile_folder = "$main/$user->id/profiles/";
+            $profile_url = "users/$user->id/profiles/";
+
+            if ($request->phone_2) {
+                $request->validate([
+                    'phone_2' => 'max:30',
+                ]);
+            }
+
+            if ($request->gender) {
+                $request->validate([
+                    'gender' => 'max:30',
+                ]);
+            }
+
+            if ($request->profile_url) {
+                $request->validate([
+                    'profile_url' => 'max:255',
+                ]);
+            }
+
+            if ($request->file(['cover_photo'])) {
+                $request->validate([
+                    'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
+                ]);
+                $cover_photo = $request->file(['cover_photo']);
+                $cover_photo_name = date('Y-m-d H-m').$cover_photo->getClientOriginalName();
+                $cover_photo_url = $cover_url.$cover_photo_name;
+                $cover_photo->storeAs("$cover_folder", $cover_photo_name);
+            } else {
+                $cover_photo_url = $request->cover_photo;
+            }
+            if ($request->file(['profile_image'])) {
+                $request->validate([
+                    'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
+                ]);
+                $profile_image = $request->file(['profile_image']);
+                $profile_image_name = date('Y-m-d H-m').$profile_image->getClientOriginalName();
+                $profile_image_url = $profile_url.$profile_image_name;
+                $profile_image->storeAs("$profile_folder", $profile_image_name);
+            } else {
+                $profile_image_url = $request->profile_image;
+            }
 
             $user_info = UserInfo::where('user_id', $user->id)->get()->first();
             $user_info->user_id = $user->id;
@@ -189,6 +202,7 @@ class MemberController extends Controller
             $user_info->cover_photo = $cover_photo_url;
             $user_info->profile_image = $profile_image_url;
             $user_info->bio = $request->bio;
+            $user_info->profile_url = $request->profile_url;
             $user_info->save();
       
             $request->validate([
@@ -200,6 +214,19 @@ class MemberController extends Controller
             $creator->description = $request->description;
             $creator->save();
             $creator->categories()->sync($request->categories);
+
+            $social_names = $request->social_name;    
+            $social_links = $request->link;    
+            if ($social_names != null && $social_links != null) {
+                $user_info_social_links = UserInfoSocialLink::where('user_info_id', $user_info->id)->get();
+                foreach ($user_info_social_links as $key => $user_info_social_link) {
+                    $user_info_social = UserInfoSocialLink::find($user_info_social_link->id);
+                    $user_info_social->user_info_id = $user_info->id;
+                    $user_info_social->name = $social_names[$key];
+                    $user_info_social->link = $social_links[$key];
+                    $user_info_social->save();
+                }
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

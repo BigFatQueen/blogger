@@ -144,7 +144,7 @@
                 <hr class="my-4" />
                 <h6 class="heading-small text-muted mb-4">Other information</h6>
                 <div class="row">
-                <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="form-group">
                             <label for="phone_1">Region<i class="text-danger"></i></label>
                             <select name="region_id" id="" class="form-control region_id">
@@ -267,6 +267,49 @@
                             @enderror
                         </div>
                     </div>
+
+                    <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label for="profile_url">Profile Link</label>
+                            <input type="text" name="name" class="form-control @error('profile_url') is-invalid @enderror" value="{{$user->userInfo->profile_url}}" autofocus id="profile_url">
+                            @error('profile_url')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                </div>
+                <hr class="my-4" />
+                <h6 class="heading-small text-muted mb-4">Social Links</h6>
+                <div class="row">
+                    @if($user->userInfo->socials != null)
+                        @foreach($user->userInfo->socials as $social)
+                            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="social_name">Social:<i class="text-danger">*</i></label>
+                                    <input type="text" name="social_name[]" class="form-control @error('social_name') is-invalid @enderror" value="{{$social->name}}" autofocus id="name">
+                                    @error('social_name')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <div class="form-group">
+                                    <label for="link">Link<i class="text-danger">*</i></label>
+                                    <input type="text" name="link[]" class="form-control @error('link') is-invalid @enderror" value="{{$social->link}}" autofocus id="email">
+                                    @error('link')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
                 <div class="form-group col-4 offset-4">
                     <input type="submit" value="Update" class="form-control btn btn-primary">

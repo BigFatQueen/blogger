@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Creator;
 use App\Region;
+use App\UserInfoSocialLink;
 use Illuminate\Http\Request;
 use App\Helper\Log;
 use App\Helper\UserHelper;
@@ -152,6 +153,12 @@ class UserController extends Controller
             ]);
         }
 
+        if ($request->profile_url) {
+            $request->validate([
+                'profile_url' => 'max:255',
+            ]);
+        }
+
         if ($request->file(['cover_photo'])) {
             $request->validate([
                 'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
@@ -184,7 +191,22 @@ class UserController extends Controller
         $user_info->cover_photo = $cover_photo_url;
         $user_info->profile_image = $profile_image_url;
         $user_info->bio = $request->bio;
+        $user_info->profile_url = $request->profile_url;
         $user_info->save();
+
+
+        $social_names = $request->social_name;    
+        $social_links = $request->link;    
+        if ($social_names != null && $social_links != null) {
+            $user_info_social_links = UserInfoSocialLink::where('user_info_id', $user_info->id)->get();
+            foreach ($user_info_social_links as $key => $user_info_social_link) {
+                $user_info_social = UserInfoSocialLink::find($user_info_social_link->id);
+                $user_info_social->user_info_id = $user_info->id;
+                $user_info_social->name = $social_names[$key];
+                $user_info_social->link = $social_links[$key];
+                $user_info_social->save();
+            }
+        }
 
         if ($request->permissions) {
             $user->permissions()->sync($request->permissions);
