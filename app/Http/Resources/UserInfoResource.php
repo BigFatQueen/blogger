@@ -29,6 +29,7 @@ class UserInfoResource extends JsonResource
             'cover_photo' => $this->cover_photo,
             'profile_image' => $this->profile_image,
             'bio' => $this->bio,
+            'profile_url' => $this->profile_url,
             'socials' => UserInfoSocialLinkResource::collection($this->socials),
         ];
     }

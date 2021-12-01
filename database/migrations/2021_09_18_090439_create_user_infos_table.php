@@ -24,6 +24,7 @@ class CreateUserInfosTable extends Migration
             $table->string('cover_photo')->default('users/cover_photo.png');
             $table->string('profile_image')->default('users/profile_image.png');
             $table->text('bio')->nullable();
+            $table->string('profile_url')->nullable()->unique();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

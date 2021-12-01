@@ -293,6 +293,12 @@ class UserController extends Controller
                 ]);
             }
 
+            if ($request->profile_url) {
+                $request->validate([
+                    'profile_url' => 'max:255',
+                ]);
+            }
+
             if ($request->file(['cover_photo'])) {
                 $request->validate([
                     'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
@@ -341,6 +347,7 @@ class UserController extends Controller
             $user_info->cover_photo = $cover_photo_url;
             $user_info->profile_image = $profile_image_url;
             $user_info->bio = $request->bio;
+            $user_info->profile_url = $request->profile_url;
             $user_info->save();
 
             $user_info =  UserInfoResource::make($user_info);
