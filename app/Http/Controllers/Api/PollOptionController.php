@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Content;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CommentResource;
-use App\Comment;
+use App\Http\Resources\ContentResource;
+use App\Http\Resources\PollOptionResource;
+use App\PollOption;
 use Illuminate\Http\Request;
 use Auth;
 
-class CommentController extends Controller
+class PollOptionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +19,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -40,19 +41,18 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'content_id' => 'required|string|max:11',
-            'comment' => 'required|string|max:255'
+            'content_id' => 'required|integer|max:11',
+            'name' => 'required|max:255',
         ]);
-        $comment = Comment::create([
+        $poll_option = PollOption::create([
             'content_id' => $request->content_id,
-            'user_info_id' => Auth::user()->userInfo->id,
-            'comment' => $request->comment
+            'name' => $request->name
         ]); 
-        $comment =  CommentResource::make($comment);
+        $poll_option =  PollOptionResource::make($poll_option);
 
         return response()->json([
             'success' => true,
-            'data' => $comment
+            'data' => $poll_option
         ],200);
     }
 
@@ -64,12 +64,11 @@ class CommentController extends Controller
      */
     public function show($id)
     {
-        //
-        $content = Content::find($id);
-        $content =  CommentResource::collection($content->comments);
+        $poll_options = PollOption::where('content_id', $id)->get();
+        $poll_options = PollOptionResource::collection($poll_options);
         return response()->json([
             'success'=> true,
-            'data'=> $content
+            'data'=> $poll_options
         ],200);
     }
 
@@ -94,20 +93,19 @@ class CommentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'content_id' => 'required|string|max:11',
-            'comment' => 'required|string|max:255'
+            'content_id' => 'required|max:11',
+            'name' => 'required|max:255',
         ]);
-        $comment = Comment::find($id);
-        $comment->content_id = $request->content_id;
-        $comment->user_info_id = Auth::user()->userInfo->id;
-        $comment->comment = $request->comment;
-        $comment->save();
+        $poll_option = PollOption::find($id);
+        $poll_option->content_id = $request->content_id;
+        $poll_option->name = $request->name;
+        $poll_option->save();
         
-        $comment =  CommentResource::make($comment);
+        $poll_option =  PollOptionResource::make($poll_option);
 
         return response()->json([
             'success' => true,
-            'data' => $comment
+            'data' => $poll_option
         ],200);
     }
 
@@ -119,14 +117,14 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        $comment = Comment::find($id);
-        $comment->delete();
+        $poll_option = PollOption::find($id);
+        $poll_option->delete();
 
         return response()->json([
             'success'=> true,
             'data'=> [
                     'code' => 200,
-                    'message' => "Comment Successfully Remove!!"
+                    'message' => "Poll Option Successfully Delete!!"
                 ]
             ],200);
     }

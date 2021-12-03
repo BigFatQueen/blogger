@@ -56,7 +56,7 @@ class SubscriptionPlanController extends Controller
 
         if ($request->file(['image'])) {
             $image = $request->file(['image']);
-            $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+            $image_name = date('Y-m-dH-m'). \uniqid();
             $image_path_url = $image_url.$image_name;
             $image->storeAs("$image_folder", $image_name);
         } else {
@@ -124,7 +124,7 @@ class SubscriptionPlanController extends Controller
 
         if ($request->file(['image'])) {
             $image = $request->file(['image']);
-            $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+            $image_name = date('Y-m-dH-m'). \uniqid();
             $image_path_url = $image_url.$image_name;
             $image->storeAs("$image_folder", $image_name);
         } else {

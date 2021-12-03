@@ -15,12 +15,11 @@ class CreatePollsTable extends Migration
     {
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('content_id');
+            $table->unsignedBigInteger('poll_option_id');
             $table->unsignedBigInteger('user_info_id');
-            $table->integer('status');
             $table->timestamps();
 
-            $table->foreign('content_id')->references('id')->on('contents')->onDelete('cascade');
+            $table->foreign('poll_option_id')->references('id')->on('poll_options')->onDelete('cascade');
             $table->foreign('user_info_id')->references('id')->on('user_infos')->onDelete('cascade');
         });
     }

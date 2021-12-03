@@ -18,9 +18,8 @@ class PollResource extends JsonResource
         //return parent::toArray($request);
         return [
             'id' => $this->id,
-            'content_id' => $this->content_id,
-            'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id)),
-            'status' => $this->status
+            'poll_option_id' => $this->poll_option_id,
+            'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id))
         ];
     }
 }

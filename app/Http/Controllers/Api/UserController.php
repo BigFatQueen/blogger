@@ -119,7 +119,7 @@ class UserController extends Controller
             ]);
             if ($request->file(['cover_photo'])) {
                 $cover_photo = $request->file(['cover_photo']);
-                $cover_photo_name = date('Y-m-d H-m').$cover_photo->getClientOriginalName();
+                $cover_photo_name = date('Y-m-dH-m'). \uniqid();
                 $cover_photo_url = $cover_url.$cover_photo_name;
                 $cover_photo->storeAs("$cover_folder", $cover_photo_name);
             } else {
@@ -127,7 +127,7 @@ class UserController extends Controller
             }
             if ($request->file(['profile_image'])) {
                 $profile_image = $request->file(['profile_image']);
-                $profile_image_name = date('Y-m-d H-m').$profile_image->getClientOriginalName();
+                $profile_image_name = date('Y-m-dH-m'). \uniqid();
                 $profile_image_url = $profile_url.$profile_image_name;
                 $profile_image->storeAs("$profile_folder", $profile_image_name);
             } else {
@@ -304,7 +304,7 @@ class UserController extends Controller
                     'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
                 ]);
                 $cover_photo = $request->file(['cover_photo']);
-                $cover_photo_name = date('Y-m-d H-m').$cover_photo->getClientOriginalName();
+                $cover_photo_name = date('Y-m-dH-m'). \uniqid();
                 $cover_photo_url = $cover_url.$cover_photo_name;
                 $cover_photo->storeAs("$cover_folder", $cover_photo_name);
             } else {
@@ -315,7 +315,7 @@ class UserController extends Controller
                     'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
                 ]);
                 $profile_image = $request->file(['profile_image']);
-                $profile_image_name = date('Y-m-d H-m').$profile_image->getClientOriginalName();
+                $profile_image_name = date('Y-m-dH-m'). \uniqid();
                 $profile_image_url = $profile_url.$profile_image_name;
                 $profile_image->storeAs("$profile_folder", $profile_image_name);
             } else {
@@ -349,6 +349,19 @@ class UserController extends Controller
             $user_info->bio = $request->bio;
             $user_info->profile_url = $request->profile_url;
             $user_info->save();
+            
+            if ($request->role_id == 2) {
+                
+                $request->validate([
+                    'categories' => ['required', 'string']
+                ]);
+                
+                $creator = Creator::create([
+                    'user_info_id' => $user_info->id,
+                    'description' => $request->description
+                ]);
+                $creator->categories()->sync(json_decode($request->categories));
+            }
 
             $user_info =  UserInfoResource::make($user_info);
 

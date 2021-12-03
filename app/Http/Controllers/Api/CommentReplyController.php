@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Content;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CommentResource;
-use App\Comment;
+use App\Http\Resources\CommentReplyResource;
+use App\CommentReply;
 use Illuminate\Http\Request;
 use Auth;
 
-class CommentController extends Controller
+class CommentReplyController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -40,19 +40,19 @@ class CommentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'content_id' => 'required|string|max:11',
+            'comment_id' => 'required|string|max:11',
             'comment' => 'required|string|max:255'
         ]);
-        $comment = Comment::create([
-            'content_id' => $request->content_id,
+        $comment_reply = CommentReply::create([
+            'comment_id' => $request->comment_id,
             'user_info_id' => Auth::user()->userInfo->id,
             'comment' => $request->comment
         ]); 
-        $comment =  CommentResource::make($comment);
+        $comment_reply =  CommentReplyResource::make($comment_reply);
 
         return response()->json([
             'success' => true,
-            'data' => $comment
+            'data' => $comment_reply
         ],200);
     }
 
@@ -65,12 +65,12 @@ class CommentController extends Controller
     public function show($id)
     {
         //
-        $content = Content::find($id);
-        $content =  CommentResource::collection($content->comments);
-        return response()->json([
-            'success'=> true,
-            'data'=> $content
-        ],200);
+        // $content = Content::find($id);
+        // $content =  CommentResource::collection($content->comments);
+        // return response()->json([
+        //     'success'=> true,
+        //     'data'=> $content
+        // ],200);
     }
 
     /**
@@ -94,20 +94,20 @@ class CommentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'content_id' => 'required|string|max:11',
+            'comment_id' => 'required|string|max:11',
             'comment' => 'required|string|max:255'
         ]);
-        $comment = Comment::find($id);
-        $comment->content_id = $request->content_id;
-        $comment->user_info_id = Auth::user()->userInfo->id;
-        $comment->comment = $request->comment;
-        $comment->save();
+        $comment_reply = CommentReply::find($id);
+        $comment_reply->comment_id = $request->comment_id;
+        $comment_reply->user_info_id = Auth::user()->userInfo->id;
+        $comment_reply->comment = $request->comment;
+        $comment_reply->save();
         
-        $comment =  CommentResource::make($comment);
+        $comment_reply =  CommentReplyResource::make($comment_reply);
 
         return response()->json([
             'success' => true,
-            'data' => $comment
+            'data' => $comment_reply
         ],200);
     }
 
@@ -119,14 +119,14 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        $comment = Comment::find($id);
-        $comment->delete();
+        $comment_reply = CommentReply::find($id);
+        $comment_reply->delete();
 
         return response()->json([
             'success'=> true,
             'data'=> [
                     'code' => 200,
-                    'message' => "Comment Successfully Remove!!"
+                    'message' => "Comment Reply Successfully Remove!!"
                 ]
             ],200);
     }

@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Poll extends Model
+class PollOption extends Model
 {
     //
     protected $guarded = [];
-    public function pollOption(){
-        $this->belongsTo(PollOption::class);
+    public function content(){
+        $this->belongsTo(Content::class);
     }
 }

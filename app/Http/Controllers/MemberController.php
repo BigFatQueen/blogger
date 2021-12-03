@@ -174,7 +174,7 @@ class MemberController extends Controller
                     'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
                 ]);
                 $cover_photo = $request->file(['cover_photo']);
-                $cover_photo_name = date('Y-m-d H-m').$cover_photo->getClientOriginalName();
+                $cover_photo_name = date('Y-m-dH-m'). \uniqid();
                 $cover_photo_url = $cover_url.$cover_photo_name;
                 $cover_photo->storeAs("$cover_folder", $cover_photo_name);
             } else {
@@ -185,7 +185,7 @@ class MemberController extends Controller
                     'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
                 ]);
                 $profile_image = $request->file(['profile_image']);
-                $profile_image_name = date('Y-m-d H-m').$profile_image->getClientOriginalName();
+                $profile_image_name = date('Y-m-dH-m'). \uniqid();
                 $profile_image_url = $profile_url.$profile_image_name;
                 $profile_image->storeAs("$profile_folder", $profile_image_name);
             } else {

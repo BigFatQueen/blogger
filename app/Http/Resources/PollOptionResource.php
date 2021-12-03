@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use App\UserInfo;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommentResource extends JsonResource
+class PollOptionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +15,11 @@ class CommentResource extends JsonResource
      */
     public function toArray($request)
     {
+        //return parent::toArray($request);
         return [
             'id' => $this->id,
             'content_id' => $this->content_id,
-            'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id)),
-            'comment' => $this->comment,
-            'comment_replies' => CommentReplyResource::collection($this->commentReplies),
+            'name' => $this->name
         ];
     }
 }

@@ -71,7 +71,7 @@ class ContentController extends Controller
 
         if ($request->file(['audio'])) {
             $audio = $request->file(['audio']);
-            $audio_name = date('Y-m-d H-m').$audio->getClientOriginalName();
+            $audio_name = date('Y-m-dH-m'). \uniqid();
             $audio_path_url = $audio_url.$audio_name;
             $audio->storeAs("$audio_folder", $audio_name);
         } else {
@@ -80,7 +80,7 @@ class ContentController extends Controller
 
         if ($request->file(['video'])) {
             $video = $request->file(['video']);
-            $video_name = date('Y-m-d H-m').$video->getClientOriginalName();
+            $video_name = date('Y-m-dH-m'). \uniqid();
             $video_path_url = $video_url.$video_name;
             $video->storeAs("$video_folder", $video_name);
         } else {
@@ -90,7 +90,7 @@ class ContentController extends Controller
         if ($request->file(['image'])) {
             $images = $request->file('image');
             foreach($images as $image) {
-                $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+                $image_name = date('Y-m-dH-m'). \uniqid();
                 $image_path_url[] = $image_url.$image_name;
                 $image->storeAs($image_folder, $image_name);
             }
@@ -179,7 +179,7 @@ class ContentController extends Controller
                 'audio' => 'file|mimes:mp3,mpeg|max:1024',
             ]);
             $audio = $request->file(['audio']);
-            $audio_name = date('Y-m-d H-m').$audio->getClientOriginalName();
+            $audio_name = date('Y-m-dH-m'). \uniqid();
             $audio_path_url = $audio_url.$audio_name;
             $audio->storeAs("$audio_folder", $audio_name);
         } else {
@@ -191,7 +191,7 @@ class ContentController extends Controller
                 'video' => 'file|mimes:mp4,3gp|max:20480',
             ]);
             $video = $request->file(['video']);
-            $video_name = date('Y-m-d H-m').$video->getClientOriginalName();
+            $video_name = date('Y-m-dH-m'). \uniqid();
             $video_path_url = $video_url.$video_name;
             $video->storeAs("$video_folder", $video_name);
         } else {
@@ -204,7 +204,7 @@ class ContentController extends Controller
             ]);
             $images = $request->file('image');
             foreach($images as $image) {
-                $image_name = date('Y-m-d H-m').$image->getClientOriginalName();
+                $image_name = date('Y-m-dH-m'). \uniqid();
                 $image_path_url[] = $image_url.$image_name;
                 $image->storeAs($image_folder, $image_name);
             }

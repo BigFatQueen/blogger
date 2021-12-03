@@ -6,6 +6,7 @@ use App\Content;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContentResource;
 use App\Http\Resources\PollResource;
+use App\Http\Resources\PollOptionResource;
 use App\Poll;
 use Illuminate\Http\Request;
 use Auth;
@@ -41,13 +42,11 @@ class PollController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'content_id' => 'required|integer|max:11',
-            'status' => 'required|integer|max:11'
+            'poll_option_id' => 'required|integer|max:11'
         ]);
         $poll = Poll::create([
-            'content_id' => $request->content_id,
-            'user_info_id' => Auth::user()->userInfo->id,
-            'status' => $request->status
+            'poll_option_id' => $request->poll_option_id,
+            'user_info_id' => Auth::user()->userInfo->id
         ]); 
         $poll =  PollResource::make($poll);
 
@@ -66,24 +65,23 @@ class PollController extends Controller
     public function show($id)
     {
         $content = Content::find($id);
-        $total_votes = count($content->polls);
-        $yes_votes = count(Poll::where('content_id', $id)->where('status', 1)->get());
-        $votes = count(Poll::where('content_id', $id)->where('status', 2)->get());
-        $no_votes = count(Poll::where('content_id', $id)->where('status', 3)->get());
-        $total_votes = $yes_votes + $votes + $no_votes;
-        $yes_percentage = $yes_votes * (100 / $total_votes);
-        $percentage = $votes * (100 / $total_votes);
-        $no_percentage = $no_votes * (100 / $total_votes);
-        $content =  PollResource::collection($content->polls);
+        $poll_options = $content->pollOptions;
+        foreach ($poll_options as $key => $poll_option) {
+            $polls[$poll_option->id] = count(Poll::where('poll_option_id', $poll_option->id)->get());
+        }
+        $total_votes = array_sum($polls);
+
+        foreach ($poll_options as $key => $poll_option) {
+            $votes = count(Poll::where('poll_option_id', $poll_option->id)->get());;
+            $poll_votes[$poll_option->id] = $votes * (100 / $total_votes);
+        }
+
+        $content =  PollOptionResource::collection($content->pollOptions);
         return response()->json([
             'success'=> true,
             'data'=> [
-                'result' => [
-                    '1' => $yes_percentage,
-                    '2' => $percentage,
-                    '3' => $no_percentage
-                ],
-                'polls' => $content
+                'result' => $poll_votes,
+                'poll_options' => $content
             ]
         ],200);
     }
@@ -109,13 +107,11 @@ class PollController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'content_id' => 'required|max:11',
-            'status' => 'required|max:11'
+            'poll_option_id' => 'required|max:11',
         ]);
         $poll = Poll::find($id);
-        $poll->content_id = $request->content_id;
+        $poll->poll_option_id = $request->poll_option_id;
         $poll->user_info_id = Auth::user()->userInfo->id;
-        $poll->status = $request->status;
         $poll->save();
         
         $poll =  PollResource::make($poll);

@@ -38,8 +38,8 @@ class Content extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function polls()
+    public function pollOptions()
     {
-        return $this->hasMany(Poll::class);
+        return $this->hasMany(PollOption::class);
     }
 }

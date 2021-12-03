@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Category;
+use App\Creator;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ContentResource extends JsonResource
@@ -15,10 +16,14 @@ class ContentResource extends JsonResource
      */
     public function toArray($request)
     {
+        $likes = count($this->likes);
         return[
             'id' => $this->id,
             'category' => new CategoryResource(Category::find($this->category_id)),
             'subscription_plans' => SubscriptionPlanResource::collection($this->subscriptionPlans),
+            'creator' => new CreatorResource(Creator::find($this->creator_id)),
+            'likes' => $likes,
+            'comments' => CommentResource::collection($this->comments),
             'title' => $this->title,
             'content' => $this->content,
             'audio' => $this->audio,
