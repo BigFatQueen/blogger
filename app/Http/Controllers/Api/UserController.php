@@ -229,7 +229,6 @@ class UserController extends Controller
         $id = Auth::user()->id;
         $request->validate([
             "name"=> 'required|min:3|max:50',
-            'role_id' => 'required',
             'cover_photo' => 'required',
             'profile_image' => 'required',
         ]);
@@ -256,6 +255,10 @@ class UserController extends Controller
                 $user->password = Hash::make($request->password);
             }
             $user->save();
+
+            if($request->role_id != null) {
+                $user->assignRole("creator");
+            }
 
             $main ="public/users";
             $cover_folder = "$main/$user->id/covers/";
