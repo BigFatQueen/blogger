@@ -251,6 +251,9 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->phone_no = $request->phone_1;
+            if($request->role_id != null) {
+                $user->role_id = $request->role_id;
+            }
             if ($request->change_pwd) {
                 $user->password = Hash::make($request->password);
             }
