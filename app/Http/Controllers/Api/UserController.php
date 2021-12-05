@@ -35,12 +35,12 @@ class UserController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string'
+            'password' => 'required|string|min:8'
         ]);
         $request->merge([
             'status' => 1,
         ]);
-        $credentials = $request->only('email', 'password', 'role_id', 'status');
+        $credentials = $request->only('email', 'password', 'status');
         $token = null;
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
@@ -92,8 +92,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:100', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'phone_no' => ['max:30'],
-            'role_id' => ['required', 'integer' , 'max:11']
+            'phone_no' => ['max:30']
         ]);
 
         DB::beginTransaction();
@@ -102,8 +101,10 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role_id' => $request->role_id
+                'role_id' => 3
             ]);
+
+            $user->assignRole("user");
 
             $main ="public/users";
             $cover_folder = "$main/$user->id/covers/";
@@ -119,7 +120,7 @@ class UserController extends Controller
             ]);
             if ($request->file(['cover_photo'])) {
                 $cover_photo = $request->file(['cover_photo']);
-                $cover_photo_name = date('Y-m-dH-m'). \uniqid();
+                $cover_photo_name = date('Y-m-dH-m'). \uniqid().".".$cover_photo->extension();
                 $cover_photo_url = $cover_url.$cover_photo_name;
                 $cover_photo->storeAs("$cover_folder", $cover_photo_name);
             } else {
@@ -127,7 +128,7 @@ class UserController extends Controller
             }
             if ($request->file(['profile_image'])) {
                 $profile_image = $request->file(['profile_image']);
-                $profile_image_name = date('Y-m-dH-m'). \uniqid();
+                $profile_image_name = date('Y-m-dH-m'). \uniqid().".".$profile_image->extension();
                 $profile_image_url = $profile_url.$profile_image_name;
                 $profile_image->storeAs("$profile_folder", $profile_image_name);
             } else {
@@ -143,27 +144,10 @@ class UserController extends Controller
                 'embed_url' => $request->embed_url,
             ]);
 
-            if ($request->role_id == 2) {
-                
-                $request->validate([
-                    'categories' => ['required', 'string']
-                ]);
-                
-                $creator = Creator::create([
-                    'user_info_id' => $user_info->id,
-                    'description' => $request->description
-                ]);
-                $creator->categories()->sync(json_decode($request->categories));
-            }
-            
-            $role = Role::find($request->role_id);
-            $user->assignRole($role->name);
-
-
             $request->merge([
                 'status' => 1,
             ]);
-            $credentials = $request->only('email', 'password', 'role_id', 'status');
+            $credentials = $request->only('email', 'password', 'status');
             $token = null;
             $token = JWTAuth::attempt($credentials);
 
@@ -210,13 +194,12 @@ class UserController extends Controller
     public function changePassword(Request $request)
     {
         $validator = validator(request()->all(), [
-            'new_password' => 'required|string|min:8|confirmed',
-            'id' => 'required'
+            'new_password' => 'required|string|min:8|confirmed'
         ]);
         if ($validator->fails()) {
             return response()->json(['status' =>'fail','response'=>$validator->errors() ]);
         }
-        $user=User::findorfail(request()->id);
+        $user=User::findorfail( Auth::user()->id);
         $user->password = Hash::make(request()->new_password);
         $result = $user->save();
         if ($result>0) {
@@ -304,7 +287,7 @@ class UserController extends Controller
                     'cover_photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
                 ]);
                 $cover_photo = $request->file(['cover_photo']);
-                $cover_photo_name = date('Y-m-dH-m'). \uniqid();
+                $cover_photo_name = date('Y-m-dH-m'). \uniqid().".".$cover_photo->extension();
                 $cover_photo_url = $cover_url.$cover_photo_name;
                 $cover_photo->storeAs("$cover_folder", $cover_photo_name);
             } else {
@@ -315,7 +298,7 @@ class UserController extends Controller
                     'profile_image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024'
                 ]);
                 $profile_image = $request->file(['profile_image']);
-                $profile_image_name = date('Y-m-dH-m'). \uniqid();
+                $profile_image_name = date('Y-m-dH-m'). \uniqid().".".$profile_image->extension();
                 $profile_image_url = $profile_url.$profile_image_name;
                 $profile_image->storeAs("$profile_folder", $profile_image_name);
             } else {

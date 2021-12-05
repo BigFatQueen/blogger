@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\UserInfo;
+use App\Content;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PollOptionResource extends JsonResource
@@ -18,7 +18,7 @@ class PollOptionResource extends JsonResource
         //return parent::toArray($request);
         return [
             'id' => $this->id,
-            'content_id' => $this->content_id,
+            'content' => new ContentResource(Content::find($this->content_id)),
             'name' => $this->name
         ];
     }

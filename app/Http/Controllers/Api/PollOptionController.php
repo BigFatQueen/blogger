@@ -41,13 +41,28 @@ class PollOptionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'content_id' => 'required|integer|max:11',
+            'category_id' => 'required|integer|max:11',
+            'title' => 'required|max:255',
             'name' => 'required|max:255',
+            'subscription_plan' => 'required',
         ]);
+
+        $content = Content::create([
+            'creator_id' => Auth::user()->userInfo->creator->id,
+            'category_id' => $request->category_id,
+            'title' => $request->title
+        ]); 
+
+
+        $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+
+        $content = new ContentResource($content);
+
         $poll_option = PollOption::create([
-            'content_id' => $request->content_id,
+            'content_id' => $content->id,
             'name' => $request->name
         ]); 
+
         $poll_option =  PollOptionResource::make($poll_option);
 
         return response()->json([
@@ -93,11 +108,9 @@ class PollOptionController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'content_id' => 'required|max:11',
             'name' => 'required|max:255',
         ]);
         $poll_option = PollOption::find($id);
-        $poll_option->content_id = $request->content_id;
         $poll_option->name = $request->name;
         $poll_option->save();
         

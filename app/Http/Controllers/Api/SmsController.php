@@ -35,14 +35,15 @@ class SmsController extends Controller
     {
         $request->validate([
             'phone_no' => 'required|unique:users,phone_no',
-            'password' => 'required|string',
-            'role_id' => 'required'
+            'password' => 'required|string|min:8',
         ]);
         $user = User::create([
             'phone_no'         => $request->phone_no,
             'password'   => Hash::make($request->password),
-            'role_id' => $request->role_id
+            'role_id' => 3
         ]);
+        
+        $user->assignRole('user');
 
         UserInfo::create([
             'user_id' => $user->id
@@ -50,7 +51,6 @@ class SmsController extends Controller
         $credentials = [
             "phone_no" => $request->phone_no,
             "password" => $request->password,
-            "role_id" => $request->role_id,
             "status" => 1
         ];
         $token = null;
@@ -98,13 +98,11 @@ class SmsController extends Controller
     {
         $request->validate([
             'phone_no' => 'required',
-            'password' => 'required|string',
-            'role_id' => 'required'
+            'password' => 'required|string|min:8'
         ]);
         $credentials = [
             "phone_no" => $request->phone_no,
             "password" => $request->password,
-            "role_id" => $request->role_id,
             "status" => 1
         ];
         $token = null;
