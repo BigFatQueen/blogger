@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use App\UserInfo;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommentReplyResource extends JsonResource
+class CommentLikeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,7 +19,6 @@ class CommentReplyResource extends JsonResource
             'id' => $this->id,
             'comment_id' => $this->comment_id,
             'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id)),
-            'comment' => $this->comment,
             'created_at' => $this->created_at,
         ];
     }

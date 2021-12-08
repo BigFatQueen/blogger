@@ -16,4 +16,8 @@ class Comment extends Model
     public function commentReplies(){
         return $this->hasMany(CommentReply::class);
     }
+
+    public function commentLikes(){
+        return $this->hasMany(CommentLike::class);
+    }
 }

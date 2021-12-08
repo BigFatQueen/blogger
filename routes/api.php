@@ -52,6 +52,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|use
     Route::resource('like','Api\LikeController');
     Route::resource('comment','Api\CommentController');
     Route::resource('comment-reply','Api\CommentReplyController');
+    Route::resource('comment-like','Api\CommentLikeController');
     Route::resource('poll-option','Api\PollOptionController');
     Route::resource('poll','Api\PollController');
     Route::resource('subscription','Api\SubscriptionController');

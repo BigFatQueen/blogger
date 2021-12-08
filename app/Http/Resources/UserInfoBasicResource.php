@@ -19,7 +19,8 @@ class UserInfoBasicResource extends JsonResource
         //return parent::toArray($request);
         return[
             'id' => $this->id,
-            'user' => new UserBasicResource(User::find($this->user_id))
+            'user' => new UserBasicResource(User::find($this->user_id)),
+            'profile_image' => $this->profile_image
         ];
     }
 }
