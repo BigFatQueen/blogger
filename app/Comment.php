@@ -14,7 +14,7 @@ class Comment extends Model
     }
 
     public function commentReplies(){
-        return $this->hasMany(CommentReply::class);
+        return $this->hasMany(CommentReply::class)->orderBy('id', 'desc');
     }
 
     public function commentLikes(){
