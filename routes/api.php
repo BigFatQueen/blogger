@@ -27,7 +27,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('auth/phone/send-sms/{no}', 'Api\SmsController@sendSMS');
     Route::post('auth/phone/register', 'Api\SmsController@register');
     Route::post('auth/phone/login', 'Api\SmsController@login');
-
+    Route::get('user/search','Api\UserController@userSearch')->name('user.search');
 });   
 
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {

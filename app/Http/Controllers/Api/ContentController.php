@@ -22,7 +22,7 @@ class ContentController extends Controller
      */
     public function index()
     {
-        $contents = Content::where('creator_id', Auth::user()->userInfo->creator->id)->get();
+        $contents = Content::where('creator_id', Auth::user()->userInfo->creator->id)->orderBy('id', 'desc')->get();
         $contents =  ContentResource::collection($contents);
         return response()->json([
             'success'=> true,
@@ -161,7 +161,6 @@ class ContentController extends Controller
             'category_id' => 'required|max:20',
             'title' => 'required|string|max:255',
             'link' => 'max:255',
-            'subscription_plan' => 'required',
         ]);
         $creator_id = Auth::user()->userInfo->creator->id;
         $main ="public/creators";
@@ -217,15 +216,29 @@ class ContentController extends Controller
         $content->creator_id = Auth::user()->userInfo->creator->id;
         $content->category_id = $request->category_id;
         $content->title = $request->title;
-        $content->content = $request->content;
-        $content->audio = $audio_path_url;
-        $content->video = $video_path_url;
-        $content->image = $image_path_url;
-        $content->link = $request->link;
-        $content->embed_url = $request->embed_url;
+        if($request->content){
+            $content->content = $request->content;
+        }
+        if($request->file(['audio'])){
+            $content->audio = $audio_path_url;
+        }
+        if($request->file(['video'])){
+            $content->video = $video_path_url;
+        }
+        if($request->file(['image'])){
+            $content->image = $image_path_url;
+        }
+        if($request->link){
+            $content->link = $request->link;
+        }
+        if($request->embed_url){
+            $content->embed_url = $request->embed_url;
+        }
         $content->save();
 
-        $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+        if($request->subscription_plan){
+            $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+        }
 
         $content = new ContentResource($content);
 

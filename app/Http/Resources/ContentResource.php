@@ -25,6 +25,7 @@ class ContentResource extends JsonResource
             'like_counts' => $likes,
             'likes' => LikeResource::collection($this->likes),
             'comments' => CommentResource::collection($this->comments),
+            'poll_options' => PollOptionResource::collection($this->pollOptions),
             'title' => $this->title,
             'content' => $this->content,
             'audio' => $this->audio,

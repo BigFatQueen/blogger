@@ -56,18 +56,19 @@ class PollOptionController extends Controller
 
         $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
 
+        $poll_options = json_decode($request->name);
+
+        foreach ($poll_options as $poll_option) {
+            $poll_option = PollOption::create([
+                'content_id' => $content->id,
+                'name' => $poll_option
+            ]); 
+        }
         $content = new ContentResource($content);
-
-        $poll_option = PollOption::create([
-            'content_id' => $content->id,
-            'name' => $request->name
-        ]); 
-
-        $poll_option =  PollOptionResource::make($poll_option);
 
         return response()->json([
             'success' => true,
-            'data' => $poll_option
+            'data' => $content
         ],200);
     }
 
@@ -107,19 +108,6 @@ class PollOptionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-        ]);
-        $poll_option = PollOption::find($id);
-        $poll_option->name = $request->name;
-        $poll_option->save();
-        
-        $poll_option =  PollOptionResource::make($poll_option);
-
-        return response()->json([
-            'success' => true,
-            'data' => $poll_option
-        ],200);
     }
 
     /**

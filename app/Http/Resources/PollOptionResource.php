@@ -18,7 +18,7 @@ class PollOptionResource extends JsonResource
         //return parent::toArray($request);
         return [
             'id' => $this->id,
-            'content' => new ContentResource(Content::find($this->content_id)),
+            'content' => $this->content_id,
             'name' => $this->name
         ];
     }

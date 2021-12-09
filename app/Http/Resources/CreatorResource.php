@@ -25,6 +25,7 @@ class CreatorResource extends JsonResource
             'user_info' => new UserInfoResource(UserInfo::find($this->user_info_id)),
             'description' => $this->description,
             'categories' => CategoryResource::collection($this->categories),
+            'subscription_plans' => SubscriptionPlanResource::collection($this->subscriptionPlans),
         ];
     }
 }

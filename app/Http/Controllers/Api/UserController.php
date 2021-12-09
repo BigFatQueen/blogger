@@ -363,5 +363,36 @@ class UserController extends Controller
             return response()->json(['status' => false, 'response'=>'Can\'t Update Profile'], 200);
         }
     }
+
+    public function userSearch(Request $request)
+    {
+        $keyword = $request->s;
+        $status = $request->status;
+        if ($status == 1) {
+            $user_info = Creator::whereHas('userInfo', function ($query) use ($keyword) {
+                $query->where('profile_url', '=', "$keyword" );
+            })->get();
+
+            //$user_info = UserInfo::where('profile_url', '=' ,$keyword)->get();
+        }else {
+            $user_info = Creator::whereHas('userInfo', function ($query) use ($keyword) {
+                $query->where('profile_url', 'LIKE', "%$keyword%" )
+                ->orWhereHas('user', function ($query) use ($keyword) {
+                    $query->where('name', 'LIKE', "%$keyword%" );
+                });
+            })->get();
+
+            // $user_info = UserInfo::where('profile_url','LIKE' ,"%$keyword%")
+            // ->orWhereHas('user', function ($query) use ($keyword) {
+            //     $query->where('name', 'LIKE', "%$keyword%" );
+            // })->get();
+        }
+        $data =  CreatorResource::collection($user_info);
+
+        return response()->json([
+            'success'=> true,
+            'data'=> $data
+        ],200);
+    }
     
 }
