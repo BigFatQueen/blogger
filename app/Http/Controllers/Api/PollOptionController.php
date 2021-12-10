@@ -40,36 +40,36 @@ class PollOptionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'category_id' => 'required|integer|max:11',
-            'title' => 'required|max:255',
-            'name' => 'required|max:255',
-            'subscription_plan' => 'required',
-        ]);
+        // $request->validate([
+        //     'category_id' => 'required|integer|max:11',
+        //     'title' => 'required|max:255',
+        //     'name' => 'required|max:255',
+        //     'subscription_plan' => 'required',
+        // ]);
 
-        $content = Content::create([
-            'creator_id' => Auth::user()->userInfo->creator->id,
-            'category_id' => $request->category_id,
-            'title' => $request->title
-        ]); 
+        // $content = Content::create([
+        //     'creator_id' => Auth::user()->userInfo->creator->id,
+        //     'category_id' => $request->category_id,
+        //     'title' => $request->title
+        // ]); 
 
 
-        $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+        // $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
 
-        $poll_options = json_decode($request->name);
+        // $poll_options = json_decode($request->name);
 
-        foreach ($poll_options as $poll_option) {
-            $poll_option = PollOption::create([
-                'content_id' => $content->id,
-                'name' => $poll_option
-            ]); 
-        }
-        $content = new ContentResource($content);
+        // foreach ($poll_options as $poll_option) {
+        //     $poll_option = PollOption::create([
+        //         'content_id' => $content->id,
+        //         'name' => $poll_option
+        //     ]); 
+        // }
+        // $content = new ContentResource($content);
 
-        return response()->json([
-            'success' => true,
-            'data' => $content
-        ],200);
+        // return response()->json([
+        //     'success' => true,
+        //     'data' => $content
+        // ],200);
     }
 
     /**

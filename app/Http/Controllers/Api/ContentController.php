@@ -11,8 +11,11 @@ use App\Http\Resources\CommentResource;
 use App\Http\Resources\LikeResource;
 use App\Http\Resources\PollResource;
 use App\Like;
+use App\PollOption;
 use App\Poll;
 use Auth;
+use DB;
+
 class ContentController extends Controller
 {
     /**
@@ -99,25 +102,44 @@ class ContentController extends Controller
             $image_path_url = NULL;
         }
 
-        $content = Content::create([
-            'creator_id' => Auth::user()->userInfo->creator->id,
-            'category_id' => $request->category_id,
-            'title' => $request->title,
-            'content' => $request->content,
-            'audio' => $audio_path_url,
-            'video' => $video_path_url,
-            'image' => $image_path_url,
-            'link' => $request->link,
-            'embed_url' => $request->embed_url,
-        ]);  
-        $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+        DB::beginTransaction();
+        try {
+                $content = Content::create([
+                    'creator_id' => Auth::user()->userInfo->creator->id,
+                    'category_id' => $request->category_id,
+                    'title' => $request->title,
+                    'content' => $request->content,
+                    'audio' => $audio_path_url,
+                    'video' => $video_path_url,
+                    'image' => $image_path_url,
+                    'link' => $request->link,
+                    'embed_url' => $request->embed_url,
+                ]);  
+                $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
 
-        $content = new ContentResource($content);
+                if($request->poll_options) {
+                    $poll_options = json_decode($request->poll_options);
+                    if(count($poll_options) > 0) {
+                        foreach ($poll_options as $poll_option) {
+                            $poll_option = PollOption::create([
+                                'content_id' => $content->id,
+                                'name' => $poll_option
+                            ]); 
+                        }
+                    }
+                }
+                DB::commit();
 
-        return response()->json([
-            'success'=> true,
-            'data'=> $content
-        ],200);
+                $content = new ContentResource($content);
+
+                return response()->json([
+                    'success'=> true,
+                    'data'=> $content
+                ],200);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(['status' => false, 'response'=> 'Can\'t create content'], 200);
+            }
     }
 
     /**

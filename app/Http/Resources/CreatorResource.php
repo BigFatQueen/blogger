@@ -26,6 +26,7 @@ class CreatorResource extends JsonResource
             'description' => $this->description,
             'categories' => CategoryResource::collection($this->categories),
             'subscription_plans' => SubscriptionPlanResource::collection($this->subscriptionPlans),
+            'subscriptions' => SubscriptionResource::collection($this->subscriptions),
         ];
     }
 }

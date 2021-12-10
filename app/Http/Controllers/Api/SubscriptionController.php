@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubscriptionResource;
 use App\Subscription;
+use App\Creator;
 use Illuminate\Http\Request;
 use Auth;
 
@@ -17,17 +18,16 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        
         $role = Auth::user()->role->name;
         if ($role == 'creator') {
-            $subscriptions = Subscription::where('creator_id', Auth::user()->userInfo->creator->id)->get();
+            $subscribers = Subscription::where('creator_id', Auth::user()->userInfo->creator->id)->get();
         }else {
-            $subscriptions = Subscription::where('user_info_id', Auth::user()->userInfo->id)->get();
+            $subscribers = Subscription::where('user_info_id', Auth::user()->userInfo->id)->get();
         }
-        $subscriptions =  SubscriptionResource::collection($subscriptions);
+        $subscribers =  SubscriptionResource::collection($subscribers);
         return response()->json([
             'success'=> true,
-            'data'=> $subscriptions
+            'data'=> $subscribers
         ],200);
     }
 
@@ -122,5 +122,15 @@ class SubscriptionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function creatorSubscriber()
+    {
+        $creator = Creator::find(Auth::user()->userinfo->creator->id);
+        $subscribers =  SubscriptionResource::collection($subscribers);
+        return response()->json([
+            'success'=> true,
+            'data'=> $subscribers
+        ],200);
     }
 }
