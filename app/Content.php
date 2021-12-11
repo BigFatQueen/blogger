@@ -9,9 +9,7 @@ class Content extends Model
 {
     //
     use SoftDeletes;
-    protected $fillable = [
-        'creator_id', 'category_id', 'title', 'content', 'audio', 'video', 'image', 'link', 'embed_url', 'status'
-    ];
+    protected $guarded = [];
     
     public function creator()
     {

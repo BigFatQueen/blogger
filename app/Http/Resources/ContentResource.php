@@ -33,6 +33,7 @@ class ContentResource extends JsonResource
             'image' => $this->image,
             'link' => $this->link,
             'embed_url' => $this->embed_url,
+            'type' => $this->type,
             'created_at' => $this->created_at,
         ];
     }

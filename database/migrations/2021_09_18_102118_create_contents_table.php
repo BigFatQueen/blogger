@@ -24,6 +24,7 @@ class CreateContentsTable extends Migration
             $table->string('image')->nullable();
             $table->string('link')->nullable();
             $table->text('embed_url')->nullable();
+            $table->integer('type');
             $table->integer('status')->default(1);
             $table->timestamps();
             $table->softDeletes();

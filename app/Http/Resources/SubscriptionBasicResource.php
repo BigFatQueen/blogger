@@ -8,7 +8,7 @@ use App\SubscriptionPlan;
 use App\UserInfo;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SubscriptionResource extends JsonResource
+class SubscriptionBasicResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -26,8 +26,7 @@ class SubscriptionResource extends JsonResource
             'subscription_plan' => new SubscriptionPlanBasicResource(SubscriptionPlan::find($this->subscription_plan_id)),
             'subscription_fee' => $this->subscription_fee,
             'join_date' => $this->fdate,
-            'end_date' => $this->tdate,
-            'cancel_date' => $this->cdate
+            'end_date' => $this->tdate
         ];
     }
 }

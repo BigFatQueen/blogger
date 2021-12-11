@@ -58,9 +58,9 @@ class ContentController extends Controller
             'video' => 'file|mimes:mp4,3gp|max:20480', 
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'link' => 'max:255',
+            'type' => 'required|max:11|integer',
             'subscription_plan' => 'required',
         ]);
-
         $creator_id = Auth::user()->userInfo->creator->id;
         $main ="public/creators";
         $audio_folder = "$main/$creator_id/audios/";
@@ -114,6 +114,7 @@ class ContentController extends Controller
                     'image' => $image_path_url,
                     'link' => $request->link,
                     'embed_url' => $request->embed_url,
+                    'type' => $request->type
                 ]);  
                 $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
 
@@ -234,6 +235,7 @@ class ContentController extends Controller
             $image_path_url = $request->image;
         }
         
+        
         $content = Content::find($id);
         $content->creator_id = Auth::user()->userInfo->creator->id;
         $content->category_id = $request->category_id;
@@ -255,6 +257,10 @@ class ContentController extends Controller
         }
         if($request->embed_url){
             $content->embed_url = $request->embed_url;
+        }
+
+        if($request->type){
+            $content->type = $request->type;
         }
         $content->save();
 
