@@ -61,7 +61,7 @@ class SubscriptionController extends Controller
 
         $subscription = Subscription::create([
             'creator_id' => $request->creator_id,
-            'user_info_id' => Auth::user()->userInfo->creator->id,
+            'user_info_id' => Auth::user()->userInfo->id,
             'subscription_plan_id' => $request->subscription_plan_id,
             'subscription_fee' => $request->subscription_fee,
             'fdate' => $request->fdate,
@@ -123,7 +123,7 @@ class SubscriptionController extends Controller
 
         $subscription = Subscription::find($id);
         $subscription->creator_id = $request->creator_id;
-        $subscription->user_info_id = Auth::user()->userInfo->creator->id;
+        $subscription->user_info_id = Auth::user()->userInfo->id;
         $subscription->subscription_plan_id = $request->subscription_plan_id;
         $subscription->subscription_fee = $request->subscription_fee;
         $subscription->fdate = $request->fdate;
