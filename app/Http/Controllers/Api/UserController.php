@@ -398,7 +398,11 @@ class UserController extends Controller
 
     public function creator(Request $request)
     {
-        $creators = Creator::all();
+        $creators = Creator::whereHas('userInfo', function ($query) {
+            $query->whereHas('user', function ($query) {
+                $query->where('status', '=',1);
+            });
+        })->get();
         $data =  CreatorAllResource::collection($creators);
 
         return response()->json([
