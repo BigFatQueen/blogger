@@ -28,6 +28,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::post('auth/phone/register', 'Api\SmsController@register');
     Route::post('auth/phone/login', 'Api\SmsController@login');
     Route::get('user/search','Api\UserController@userSearch')->name('user.search');
+    Route::get('user/creator','Api\UserController@creator')->name('user.creator');
 });   
 
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify']], function () {

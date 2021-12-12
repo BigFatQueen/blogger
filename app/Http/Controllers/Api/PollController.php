@@ -76,12 +76,23 @@ class PollController extends Controller
             $poll_votes[$poll_option->id] = $votes * (100 / $total_votes);
         }
 
+        foreach ($poll_options as $key => $poll_option) {
+            $voted = Poll::where([
+                ['poll_option_id', $poll_option->id],
+                ['user_info_id', Auth::user()->userInfo->id],
+                ])->get()->first();
+            if($voted){
+                $check_votes['poll_option_id'] = $poll_option->id;
+            }
+        }
+
         $content =  PollOptionResource::collection($content->pollOptions);
         return response()->json([
             'success'=> true,
             'data'=> [
                 'result' => $poll_votes,
-                'poll_options' => $content
+                'poll_options' => $content,
+                'voted' => $check_votes
             ]
         ],200);
     }

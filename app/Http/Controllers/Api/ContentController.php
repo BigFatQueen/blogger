@@ -220,6 +220,9 @@ class ContentController extends Controller
             $audio->storeAs("$audio_folder", $audio_name);
         } else {
             $audio_path_url = $request->audio;
+            if($audio_path_url == 'null' || $audio_path_url ==  null) {
+                $audio_path_url = NULL; 
+            }
         }
 
         if ($request->file(['video'])) {
@@ -232,6 +235,9 @@ class ContentController extends Controller
             $video->storeAs("$video_folder", $video_name);
         } else {
             $video_path_url = $request->video;
+            if($video_path_url == 'null' || $video_path_url ==  null) {
+                $video_path_url = NULL; 
+            }
         }
 
         if ($request->file(['image'])) {
@@ -247,6 +253,9 @@ class ContentController extends Controller
             $image_path_url = json_encode($image_path_url);
         } else {
             $image_path_url = $request->image;
+            if($image_path_url == 'null' || $image_path_url ==  null) {
+                $image_path_url = NULL; 
+            }
         }
         
         
@@ -257,15 +266,9 @@ class ContentController extends Controller
         if($request->content){
             $content->content = $request->content;
         }
-        if($request->file(['audio'])){
-            $content->audio = $audio_path_url;
-        }
-        if($request->file(['video'])){
-            $content->video = $video_path_url;
-        }
-        if($request->file(['image'])){
-            $content->image = $image_path_url;
-        }
+        $content->audio = $audio_path_url;
+        $content->video = $video_path_url;
+        $content->image = $image_path_url;
         if($request->link){
             $content->link = $request->link;
         }

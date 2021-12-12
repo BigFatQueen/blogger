@@ -20,6 +20,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserInfoResource;
 use App\Http\Resources\CreatorResource;
+use App\Http\Resources\CreatorAllResource;
 
 class UserController extends Controller
 {
@@ -388,6 +389,17 @@ class UserController extends Controller
             // })->get();
         }
         $data =  CreatorResource::collection($user_info);
+
+        return response()->json([
+            'success'=> true,
+            'data'=> $data
+        ],200);
+    }
+
+    public function creator(Request $request)
+    {
+        $creators = Creator::all();
+        $data =  CreatorAllResource::collection($creators);
 
         return response()->json([
             'success'=> true,

@@ -240,7 +240,7 @@ class SubscriptionController extends Controller
             ]);
 
             $query = Subscription::where('creator_id', Auth::user()->userinfo->creator->id);
-            $query->where('status', 1);
+            // $query->where('status', 1);
             if ($status != null) {
                 $status_arr = \json_decode($status);
 
