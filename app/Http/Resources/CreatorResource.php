@@ -20,6 +20,17 @@ class CreatorResource extends JsonResource
     public function toArray($request)
     {
         //return parent::toArray($request);
+        // dd($this->subscriptions);
+        $counts = 0;
+        foreach ($this->subscriptions as $subscription) {
+            $user_info_id = session("key-$subscription->user_info_id");
+            echo $user_info_id;
+            echo $subscription->user_info_id;
+            if($user_info_id != $subscription->user_info_id){
+                $counts +=1;
+            }
+            session(["key-$subscription->user_info_id" => $subscription->user_info_id]);
+        }
         return[
             'id' => $this->id,
             'user_info' => new UserInfoResource(UserInfo::find($this->user_info_id)),
@@ -27,6 +38,8 @@ class CreatorResource extends JsonResource
             'categories' => CategoryResource::collection($this->categories),
             'subscription_plans' => SubscriptionPlanResource::collection($this->subscriptionPlans),
             'subscriptions' => SubscriptionResource::collection($this->subscriptions),
+            'subscriptions_counts' => $counts,
+            'content_counts' => count($this->contents),
         ];
     }
 }

@@ -30,4 +30,8 @@ class Creator extends Model
     {
         return $this->hasMany(Subscription::class);
     }
+    public function contents()
+    {
+        return $this->hasMany(Content::class);
+    }
 }

@@ -148,9 +148,22 @@ class SubscriptionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
-        //
+        $cdate = $request->cdate;
+        $subscription = Subscription::find($id);
+        $subscription->cdate = $cdate;
+        $subscription->status = 2;
+        $subscription->save();
+        $subscription->delete();
+
+        return response()->json([
+            'success'=> true,
+            'data'=> [
+                    'code' => 200,
+                    'message' => "Subscription Successfully Delete!!"
+                ]
+            ],200);
     }
 
     public function creatorSubscriber()
@@ -210,35 +223,51 @@ class SubscriptionController extends Controller
             $fdate = $filter->fdate;
             $tdate = $filter->tdate;
 
+            $qcenters = DB::table('qcenters')
+            ->join('qcenter_types', 'qcenters.qcenter_type_id', '=', 'qcenter_types.id')
+            ->join('regions', 'qcenters.region_id', '=', 'regions.id')
+            ->join('districts', 'qcenters.district_id', '=', 'districts.id')
+            ->join('townships', 'qcenters.township_id', '=', 'townships.id')
+            ->where([
+                ['qcenters.qcenter_name', 'like', "%$keyword%"],
+                ['qcenters.qcenter_id', '=', $user_qcenter],
+                ['qcenters.del_status', '=', 0]
+            ])
+            ->orWhere([
+                ['qcenters.phone', 'like', "%$keyword%"],
+                ['qcenters.district_id', '=', $user_qcenter],
+                ['qcenters.del_status', '=', 0]
+            ]);
+
             $query = Subscription::where('creator_id', Auth::user()->userinfo->creator->id);
             $query->where('status', 1);
-            // if ($status != null) {
-            //     $status_arr = \json_decode($status);
+            if ($status != null) {
+                $status_arr = \json_decode($status);
 
-            //     if (count($status_arr) > 0) {
-            //         foreach ($status_arr as $key => $status) {
-            //             if ($key == 0) {
-            //                 $query->where('status', $status);
-            //             }else {
-            //                 $query->orWhere('status', $status);
-            //             }
-            //         }
-            //     }
-            // }
+                if (count($status_arr) > 0) {
+                    foreach ($status_arr as $key => $status) {
+                        if ($key == 0) {
+                            $query->where('status', $status);
+                        }else {
+                            $query->orWhere('status', $status);
+                        }
+                    }
+                }
+            }
 
-            // if ($tiers != null) {
-            //     $tiers = \json_decode($tiers);
+            if ($tiers != null) {
+                $tiers = \json_decode($tiers);
 
-            //     if (count($tiers) > 0) {
-            //         foreach ($tiers as $key => $tier) {
-            //             if ($key == 0) {
-            //                 $query->where('subscription_plan_id', $tier);
-            //             }else {
-            //                 $query->orWhere('subscription_plan_id', $tier);
-            //             }
-            //         }
-            //     }
-            // }
+                if (count($tiers) > 0) {
+                    foreach ($tiers as $key => $tier) {
+                        if ($key == 0) {
+                            $query->where('subscription_plan_id', $tier);
+                        }else {
+                            $query->orWhere('subscription_plan_id', $tier);
+                        }
+                    }
+                }
+            }
 
             if ($this_week != null) {
                 $fdate = date("Y-m-d", \strtotime("-1 week"));

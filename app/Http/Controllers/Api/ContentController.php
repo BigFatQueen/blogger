@@ -23,9 +23,22 @@ class ContentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $contents = Content::where('creator_id', Auth::user()->userInfo->creator->id)->orderBy('id', 'desc')->get();
+        $type = $request->type;
+        if($type == 1 || $type == 2) {
+            $contents = Content::where('type', $type)->orderBy('id', 'desc')->get();
+        }elseif ($type == 3) {
+            $subscription_plan_id = $request->subscription_plan_id;
+            $contents = Content::where('type', $type)
+            ->whereHas('subscriptionPlans', function ($query) use ($subscription_plan_id) {
+                return $query->where('subscription_plan_id', '=' , $subscription_plan_id);
+            })
+            ->orderBy('id', 'desc')->get();
+        }else {
+            $contents = Content::where('creator_id', Auth::user()->userInfo->creator->id)->orderBy('id', 'desc')->get();
+        }
+        
         $contents =  ContentResource::collection($contents);
         return response()->json([
             'success'=> true,
@@ -59,7 +72,6 @@ class ContentController extends Controller
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'link' => 'max:255',
             'type' => 'required|max:11|integer',
-            'subscription_plan' => 'required',
         ]);
         $creator_id = Auth::user()->userInfo->creator->id;
         $main ="public/creators";
@@ -116,7 +128,9 @@ class ContentController extends Controller
                     'embed_url' => $request->embed_url,
                     'type' => $request->type
                 ]);  
-                $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+                if($request->subscription_plan){
+                    $content->subscriptionPlans()->sync(json_decode($request->subscription_plan));
+                }
 
                 if($request->poll_options) {
                     $poll_options = json_decode($request->poll_options);
