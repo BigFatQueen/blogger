@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubscriptionResource;
+use App\Http\Resources\SubscriptionBasicResource;
 use App\Subscription;
 use App\Creator;
 use App\Filter;
 use Illuminate\Http\Request;
 use Auth;
+use DB;
 use Illuminate\Contracts\Support\Jsonable;
 
 class SubscriptionController extends Controller
@@ -335,6 +337,38 @@ class SubscriptionController extends Controller
                 'next_page_url' => $subscription_array['next_page_url'],
                 'prev_page_url' => $subscription_array['prev_page_url'],
             ],
+        ],200);
+    }
+
+    public function earnings(Request $request)
+    {
+        $status = $request->status;
+        if ($status == 1 || $status == 2) {
+            if($status == 1){
+                $fdate = date("Y-m-d", \strtotime("-6 month"));
+                $tdate = date("Y-m-d");
+            }else {
+
+                $fdate = date("Y-m-d", \strtotime("-12 month"));
+                $tdate = date("Y-m-d");
+            }
+            $subscriptions = Subscription::select('subscription_plan_id',DB::raw('sum(subscription_fee) as total'))
+                ->where('creator_id', Auth::user()->userinfo->creator->id)
+                ->where('fdate', '>=', $fdate)
+                ->where('fdate', '<=', $tdate)
+                ->groupBy('subscription_plan_id')
+                ->get();
+        }else {
+            $subscriptions = Subscription::select('subscription_plan_id',DB::raw('sum(subscription_fee) as total'))
+                ->where('creator_id', Auth::user()->userinfo->creator->id)
+                ->groupBy('subscription_plan_id')
+                ->get();
+        }
+
+        $subscriptions =  SubscriptionBasicResource::collection($subscriptions);
+        return response()->json([
+            'success'=> true,
+            'data'=> $subscriptions
         ],200);
     }
 }

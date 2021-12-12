@@ -59,5 +59,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.verify', 'role:creator|use
     Route::resource('subscription','Api\SubscriptionController');
     Route::get('creator/subscriber','Api\SubscriptionController@creatorSubscriber');
     Route::get('creator/rsmanager','Api\SubscriptionController@rsManager');
+    Route::get('creator/earnings','Api\SubscriptionController@earnings');
     Route::resource('filter','Api\FilterController');
 });
