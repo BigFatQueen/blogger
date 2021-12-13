@@ -348,10 +348,12 @@ class UserController extends Controller
                     'categories' => ['required', 'string']
                 ]);
                 
-                $creator = Creator::create([
-                    'user_info_id' => $user_info->id,
-                    'description' => $request->description
-                ]);
+                $creator = new Creator;
+                $creator->user_info_id = $user_info->id;
+                $creator->description = $request->description;
+                $creator->content_status = $request->content_status;
+                $creator->save();
+
                 $creator->categories()->sync(json_decode($request->categories));
             }
 
