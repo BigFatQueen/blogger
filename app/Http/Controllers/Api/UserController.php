@@ -143,7 +143,7 @@ class UserController extends Controller
                 'dob' => $request->dob,
                 'cover_photo' => $cover_photo_url,
                 'profile_image' => $profile_image_url,
-                'embed_url' => $request->embed_url,
+                'profile_url' => $request->profile_url,
             ]);
 
             $request->merge([
