@@ -17,6 +17,7 @@ class CreateCreatorsTable extends Migration
             $table->id();
             $table->foreignId('user_info_id');
             $table->text('description')->nullable();
+            $table->integer('content_status')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

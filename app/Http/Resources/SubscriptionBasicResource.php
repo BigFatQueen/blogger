@@ -20,13 +20,8 @@ class SubscriptionBasicResource extends JsonResource
     {
         //return parent::toArray($request);
         return[
-            'id' => $this->id,
-            'creator' => new CreatorBasicResource(Creator::find($this->creator_id)),
-            'user_info' => new UserInfoBasicResource(UserInfo::find($this->user_info_id)),
             'subscription_plan' => new SubscriptionPlanBasicResource(SubscriptionPlan::find($this->subscription_plan_id)),
-            'subscription_fee' => $this->subscription_fee,
-            'join_date' => $this->fdate,
-            'end_date' => $this->tdate
+            'total' => $this->total
         ];
     }
 }

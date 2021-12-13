@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubscriptionResource;
+use App\Http\Resources\SubscriptionBasicResource;
 use App\Subscription;
 use App\Creator;
 use App\Filter;
 use Illuminate\Http\Request;
 use Auth;
+use DB;
 use Illuminate\Contracts\Support\Jsonable;
 
 class SubscriptionController extends Controller
@@ -155,7 +157,7 @@ class SubscriptionController extends Controller
         $subscription->cdate = $cdate;
         $subscription->status = 2;
         $subscription->save();
-        $subscription->delete();
+        // $subscription->delete();
 
         return response()->json([
             'success'=> true,
@@ -223,35 +225,21 @@ class SubscriptionController extends Controller
             $fdate = $filter->fdate;
             $tdate = $filter->tdate;
 
-            $qcenters = DB::table('qcenters')
-            ->join('qcenter_types', 'qcenters.qcenter_type_id', '=', 'qcenter_types.id')
-            ->join('regions', 'qcenters.region_id', '=', 'regions.id')
-            ->join('districts', 'qcenters.district_id', '=', 'districts.id')
-            ->join('townships', 'qcenters.township_id', '=', 'townships.id')
-            ->where([
-                ['qcenters.qcenter_name', 'like', "%$keyword%"],
-                ['qcenters.qcenter_id', '=', $user_qcenter],
-                ['qcenters.del_status', '=', 0]
-            ])
-            ->orWhere([
-                ['qcenters.phone', 'like', "%$keyword%"],
-                ['qcenters.district_id', '=', $user_qcenter],
-                ['qcenters.del_status', '=', 0]
-            ]);
-
             $query = Subscription::where('creator_id', Auth::user()->userinfo->creator->id);
             // $query->where('status', 1);
             if ($status != null) {
                 $status_arr = \json_decode($status);
 
                 if (count($status_arr) > 0) {
-                    foreach ($status_arr as $key => $status) {
-                        if ($key == 0) {
-                            $query->where('status', $status);
-                        }else {
-                            $query->orWhere('status', $status);
+                    $query->where(function($sub_query) use ($status_arr) {
+                        foreach ($status_arr as $key => $status) {
+                            if ($key == 0) {
+                                $sub_query->where('status','=',$status);
+                            }else {
+                                $sub_query->orWhere('status','=',$status);
+                            }
                         }
-                    }
+                    });
                 }
             }
 
@@ -259,13 +247,15 @@ class SubscriptionController extends Controller
                 $tiers = \json_decode($tiers);
 
                 if (count($tiers) > 0) {
-                    foreach ($tiers as $key => $tier) {
-                        if ($key == 0) {
-                            $query->where('subscription_plan_id', $tier);
-                        }else {
-                            $query->orWhere('subscription_plan_id', $tier);
+                    $query->where(function($sub_query) use ($tiers) {
+                        foreach ($tiers as $key => $subscription_plan_id) {
+                            if ($key == 0) {
+                                $sub_query->where('subscription_plan_id','=',$subscription_plan_id);
+                            }else {
+                                $sub_query->orWhere('subscription_plan_id','=',$subscription_plan_id);
+                            }
                         }
-                    }
+                    });
                 }
             }
 
@@ -335,6 +325,38 @@ class SubscriptionController extends Controller
                 'next_page_url' => $subscription_array['next_page_url'],
                 'prev_page_url' => $subscription_array['prev_page_url'],
             ],
+        ],200);
+    }
+
+    public function earnings(Request $request)
+    {
+        $status = $request->status;
+        if ($status == 1 || $status == 2) {
+            if($status == 1){
+                $fdate = date("Y-m-d", \strtotime("-6 month"));
+                $tdate = date("Y-m-d");
+            }else {
+
+                $fdate = date("Y-m-d", \strtotime("-12 month"));
+                $tdate = date("Y-m-d");
+            }
+            $subscriptions = Subscription::select('subscription_plan_id',DB::raw('sum(subscription_fee) as total'))
+                ->where('creator_id', Auth::user()->userinfo->creator->id)
+                ->where('fdate', '>=', $fdate)
+                ->where('fdate', '<=', $tdate)
+                ->groupBy('subscription_plan_id')
+                ->get();
+        }else {
+            $subscriptions = Subscription::select('subscription_plan_id',DB::raw('sum(subscription_fee) as total'))
+                ->where('creator_id', Auth::user()->userinfo->creator->id)
+                ->groupBy('subscription_plan_id')
+                ->get();
+        }
+
+        $subscriptions =  SubscriptionBasicResource::collection($subscriptions);
+        return response()->json([
+            'success'=> true,
+            'data'=> $subscriptions
         ],200);
     }
 }
