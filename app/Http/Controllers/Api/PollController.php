@@ -64,6 +64,8 @@ class PollController extends Controller
      */
     public function show($id)
     {
+        $poll_votes = [];
+        $check_votes = [];
         $content = Content::find($id);
         $poll_options = $content->pollOptions;
         foreach ($poll_options as $key => $poll_option) {
@@ -71,12 +73,12 @@ class PollController extends Controller
         }
         $total_votes = array_sum($polls);
 
-        foreach ($poll_options as $key => $poll_option) {
-            $votes = count(Poll::where('poll_option_id', $poll_option->id)->get());
-            if($votes) {
-                $poll_votes[$poll_option->id] = $votes * (100 / $total_votes);
-            }
-        }
+        // foreach ($poll_options as $key => $poll_option) {
+        //     $votes = count(Poll::where('poll_option_id', $poll_option->id)->get());
+        //     if($votes) {
+        //         $poll_votes[$poll_option->id] = $votes * (100 / $total_votes);
+        //     }
+        // }
 
         foreach ($poll_options as $key => $poll_option) {
             $voted = Poll::where([
