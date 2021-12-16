@@ -2,11 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Creator;
+use App\Subscription;
+use App\SubscriptionPlan;
+use App\UserInfo;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\User;
-use App\Http\Resources\UserResource;
 
-class UserInfoBasicResource extends JsonResource
+class SubscriptionCreatorResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,10 +20,7 @@ class UserInfoBasicResource extends JsonResource
     {
         //return parent::toArray($request);
         return[
-            'id' => $this->id,
-            'user' => new UserBasicResource(User::find($this->user_id)),
-            'profile_image' => $this->profile_image,
-            'profile_url' => $this->profile_url
+            'creator' => new CreatorBasicResource(Creator::find($this->creator_id))
         ];
     }
 }

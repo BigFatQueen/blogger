@@ -24,8 +24,6 @@ class CreatorResource extends JsonResource
         $counts = 0;
         foreach ($this->subscriptions as $subscription) {
             $user_info_id = session("key-$subscription->user_info_id");
-            echo $user_info_id;
-            echo $subscription->user_info_id;
             if($user_info_id != $subscription->user_info_id){
                 $counts +=1;
             }

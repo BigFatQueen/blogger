@@ -13,6 +13,7 @@ use App\Http\Resources\PollResource;
 use App\Like;
 use App\PollOption;
 use App\Poll;
+use App\Subscription;
 use Auth;
 use DB;
 
@@ -26,15 +27,20 @@ class ContentController extends Controller
     public function index(Request $request)
     {
         $type = $request->type;
-        if($type == 1 || $type == 2) {
-            $contents = Content::where('type', $type)->orderBy('id', 'desc')->get();
-        }elseif ($type == 3) {
-            $subscription_plan_id = $request->subscription_plan_id;
-            $contents = Content::where('type', $type)
-            ->whereHas('subscriptionPlans', function ($query) use ($subscription_plan_id) {
-                return $query->where('subscription_plan_id', '=' , $subscription_plan_id);
-            })
-            ->orderBy('id', 'desc')->get();
+        if ($type == 'all') {
+            $subscriptions = Subscription::where('user_info_id', Auth::user()->userInfo->id)->get();
+            $query = Content::where('type', 1);
+            $query->orWhere('type', 2);
+            $query->orWhereHas('subscriptionPlans', function ($sub_query) use ($subscriptions) {
+                foreach ($subscriptions as $key => $subscription) {
+                    if ($key == 0) {
+                        $sub_query->where('subscription_plan_id','=', $subscription->subscription_plan_id);
+                    }else {
+                        $sub_query->orWhere('subscription_plan_id','=',$subscription->subscription_plan_id);
+                    }
+                }
+            });
+            $contents = $query->orderBy('id', 'desc')->get();
         }else {
             $contents = Content::where('creator_id', Auth::user()->userInfo->creator->id)->orderBy('id', 'desc')->get();
         }

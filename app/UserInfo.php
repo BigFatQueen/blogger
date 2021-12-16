@@ -28,5 +28,10 @@ class UserInfo extends Model
     {
         return $this->belongsTo(Region::class);
     }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
     
 }
