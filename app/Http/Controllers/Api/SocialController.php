@@ -178,6 +178,8 @@ class SocialController extends Controller
                 'data'=> [
                     'id' =>  $user->id,
                     'name' => $user->name,
+                    'profile_image' => $user->userInfo->profile_image,
+                    'profile_url' => $user->userInfo->profile_url,
                     'role' => $user->role->name,
                     'status' => 'Active',
                     'access_token' => $token,
@@ -242,6 +244,7 @@ class SocialController extends Controller
                     'id' =>  $user->id,
                     'name' => $user->name,
                     'profile_image' => $user->userInfo->profile_image,
+                    'profile_url' => $user->userInfo->profile_url,
                     'role' => $user->role->name,
                     'status' => 'Active',
                     'access_token' => $token,

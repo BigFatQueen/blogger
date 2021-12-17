@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\UserInfo;
 use App\UserInfoSocialLink;
+use App\Subscription;
 use DB;
 use Hash;
 use JWTAuth;
@@ -21,6 +22,7 @@ use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserInfoResource;
 use App\Http\Resources\CreatorResource;
 use App\Http\Resources\CreatorAllResource;
+use App\Http\Resources\SubscriptionCreatorResource;
 
 class UserController extends Controller
 {
@@ -80,6 +82,7 @@ class UserController extends Controller
                 'id' =>  $user->id,
                 'name' => $user->name,
                 'profile_image' => $user->userInfo->profile_image,
+                'profile_url' => $user->userInfo->profile_url,
                 'role' => $user->role->name,
                 'status' => 'Active',
                 'access_token' => $token,
@@ -172,6 +175,7 @@ class UserController extends Controller
                 'id' =>  $user->id,
                 'name' => $user->name,
                 'profile_image' => $user->userInfo->profile_image,
+                'profile_url' => $user->userInfo->profile_url,
                 'role' => $user->role->name,
                 'status' => 'Active',
                 'access_token' => $token,
@@ -221,6 +225,17 @@ class UserController extends Controller
         }else {
             $data =  UserInfoResource::make($user_info);
         }
+
+        return response()->json([
+            'success'=> true,
+            'data'=> $data
+        ],200);
+    }
+    public function getCreators()
+    {
+        $subscriptions = Subscription::where('user_info_id', Auth::user()->userInfo->id)->get()->unique('creator_id');;
+
+        $data =  SubscriptionCreatorResource::collection($subscriptions);
 
         return response()->json([
             'success'=> true,
