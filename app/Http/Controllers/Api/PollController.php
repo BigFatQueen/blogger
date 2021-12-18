@@ -145,7 +145,9 @@ class PollController extends Controller
      */
     public function destroy($id)
     {
-        $poll = Poll::find($id);
+        $poll = Poll::where('poll_option_id',$id)->first();
+
+     
         $poll->delete();
 
         return response()->json([
